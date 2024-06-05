@@ -156,6 +156,8 @@ class DatabaseHandler:
         database_read = self.read_database()
         database = database_read.database
 
+        name_entry["name"] = name_entry["name"].title()
+
         validated_name_entry = name_entry_schema.validate(name_entry)
 
         for existing_name_entry in database["names"]:
@@ -187,6 +189,8 @@ class DatabaseHandler:
     ) -> DBCRUDResponse:
         database_read = self.read_database()
         database = database_read.database
+
+        surname_entry["surname"] = surname_entry["surname"].title()
 
         validated_surname_entry = surname_entry_schema.validate(surname_entry)
 
