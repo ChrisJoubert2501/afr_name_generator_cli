@@ -6,7 +6,8 @@ from typing import List, Optional
 
 import typer
 
-from ang import ERRORS, __app_name__, __version__, ang, config, database
+from ang import ERROR_STRINGS, __app_name__, __version__, ang, config
+from ang.database import database
 
 app = typer.Typer()
 
@@ -26,7 +27,7 @@ def init(
 
     if app_init_error:
         typer.secho(
-            f'Creating config file failed with "{ERRORS[app_init_error]}"',
+            f'Creating config file failed with "{ERROR_STRINGS[app_init_error]}"',
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
@@ -35,13 +36,15 @@ def init(
 
     if db_init_error:
         typer.secho(
-            f'Creating database failed with "{ERRORS[db_init_error]}"',
+            f'Creating database failed with "{ERROR_STRINGS[db_init_error]}"',
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
 
     else:
-        typer.secho(f"The ang database is {db_path}", fg=typer.colors.GREEN)
+        typer.secho(
+            f"The ang database is stored at\n{db_path}", fg=typer.colors.GREEN
+        )
 
 
 def get_namer() -> ang.Namer:
@@ -65,29 +68,7 @@ def get_namer() -> ang.Namer:
         raise typer.Exit(1)
 
 
-@app.command()
-def add(
-    first_name: List[str] = typer.Argument(...),
-    prevalence: int = typer.Option(2, "--prevalence", "-p", min=1, max=10),
-) -> None:
-    """Add a new name with a prevalence (between 1-10, optional)."""
-    namer = get_namer()
-    name_entry, error = namer.add(first_name, prevalence)
-    if error:
-        typer.secho(
-            f'Adding name failed with "{ERRORS[error]}"', fg=typer.colors.RED
-        )
-        raise typer.Exit(1)
-    else:
-        typer.secho(
-            f"""First name: "{name_entry['first_name']}" was added """
-            f"""with prevalence: {name_entry['prevalence']}""",
-            fg=typer.colors.GREEN,
-        )
-
-
-@app.command(name="list")
-def list_all() -> None:
+def _list_all_names() -> None:
     """List all first names."""
 
     namer = get_namer()
@@ -101,10 +82,11 @@ def list_all() -> None:
         )
         raise typer.Exit()
 
-    typer.secho("\nname list:\n", fg=typer.colors.BLUE, bold=True)
+    typer.secho("\nName list:\n", fg=typer.colors.BLUE, bold=True)
+
     columns = (
         "Index.  ",
-        "| First Name            ",
+        "| Name                  ",
         "| Prevalence  ",
     )
 
@@ -114,18 +96,120 @@ def list_all() -> None:
 
     typer.secho("-" * len(headers), fg=typer.colors.BLUE)
 
-    for id, name in enumerate(name_list, 1):
+    for id, name_entry in enumerate(name_list, 1):
 
-        first_name, prevalence = name.values()
+        name, prevalence = name_entry.values()
 
         typer.secho(
             f"{id}{(len(columns[0]) - len(str(id))) * ' '}"
-            f"| {first_name}{(len(columns[1]) - len(first_name) - 2) * ' '}"
+            f"| {name}{(len(columns[1]) - len(name) - 2) * ' '}"
             f"| {prevalence}",
             fg=typer.colors.BLUE,
         )
 
     typer.secho("-" * len(headers) + "\n", fg=typer.colors.BLUE)
+
+
+def _list_all_surnames() -> None:
+    """List all surnames."""
+
+    namer = get_namer()
+
+    surname_list = namer.get_surname_list()
+
+    if len(surname_list) == 0:
+        typer.secho(
+            "There are no surnames in the name database yet",
+            fg=typer.colors.MAGENTA,
+        )
+        raise typer.Exit()
+
+    typer.secho("\nSurname list:\n", fg=typer.colors.BLUE, bold=True)
+
+    columns = (
+        "Index.  ",
+        "| Surname               ",
+        "| Prevalence  ",
+    )
+
+    headers = "".join(columns)
+
+    typer.secho(headers, fg=typer.colors.BLUE, bold=True)
+
+    typer.secho("-" * len(headers), fg=typer.colors.BLUE)
+
+    for id, surname_entry in enumerate(surname_list, 1):
+
+        surname, prevalence = surname_entry.values()
+
+        typer.secho(
+            f"{id}{(len(columns[0]) - len(str(id))) * ' '}"
+            f"| {surname}{(len(columns[1]) - len(surname) - 2) * ' '}"
+            f"| {prevalence}",
+            fg=typer.colors.BLUE,
+        )
+
+    typer.secho("-" * len(headers) + "\n", fg=typer.colors.BLUE)
+
+
+@app.command()
+def add_name(
+    name_input: List[str] = typer.Argument(...),
+    prevalence: int = typer.Option(10, "--prevalence", "-p", min=1, max=10),
+) -> None:
+    """Add a new name with a prevalence (between 1-10, optional)."""
+    namer = get_namer()
+    name_entry, response = namer.add_name(name_input, prevalence)
+    if response:
+        typer.secho(
+            f'Adding name failed with "{ERROR_STRINGS[response]}"',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
+    else:
+        typer.secho(
+            f"""First name: "{name_entry['name']}" was added """
+            f"""with prevalence: {name_entry['prevalence']}""",
+            fg=typer.colors.GREEN,
+        )
+
+
+@app.command()
+def add_surname(
+    surname_input: List[str] = typer.Argument(...),
+    prevalence: int = typer.Option(10, "--prevalence", "-p", min=1, max=10),
+) -> None:
+    """Add a new surname with a prevalence (between 1-10, optional)."""
+    namer = get_namer()
+    surname_entry, response = namer.add_surname(surname_input, prevalence)
+    if response:
+        typer.secho(
+            f'Adding surname failed with "{ERROR_STRINGS[response]}"',
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
+    else:
+        typer.secho(
+            f"""Surname: "{surname_entry['surname']}" was added """
+            f"""with prevalence: {surname_entry['prevalence']}""",
+            fg=typer.colors.GREEN,
+        )
+
+
+@app.command()
+def list_names() -> None:
+    _list_all_names()
+
+
+@app.command()
+def list_surnames() -> None:
+    _list_all_surnames()
+
+
+@app.command()
+def list_all() -> None:
+    _list_all_names()
+    _list_all_surnames()
 
 
 @app.command(name="set_prevalence")
@@ -137,11 +221,13 @@ def set_prevalence(
 
     namer = get_namer()
 
-    name_entry, error = namer.set_prevalence(name_index, new_prevalence)
+    name_entry, response = namer.set_name_prevalence(
+        name_index, new_prevalence
+    )
 
-    if error:
+    if response:
         typer.secho(
-            f'Setting prevalence on name # "{name_index}" failed with "{ERRORS[error]}"',
+            f'Setting prevalence on name # "{name_index}" failed with "{ERROR_STRINGS[response]}"',
             fg=typer.colors.RED,
         )
         raise typer.Exit(1)
@@ -155,7 +241,7 @@ def set_prevalence(
 
 
 @app.command()
-def remove(
+def remove_name(
     name_idx: int = typer.Argument(...),
     force: bool = typer.Option(
         False,
@@ -168,18 +254,18 @@ def remove(
     namer = get_namer()
 
     def _remove():
-        name_entry, error = namer.remove(name_idx)
-        if error:
+        name_entry, response = namer.remove_name_by_idx(name_idx)
+        if response:
 
             typer.secho(
-                f'Removing name # {name_idx} failed with "{ERRORS[error]}"',
+                f'Removing name # {name_idx} failed with "{ERROR_STRINGS[response]}"',
                 fg=typer.colors.RED,
             )
             raise typer.Exit(1)
 
         else:
             typer.secho(
-                f"""Name # {name_idx}: '{name_entry["first_name"]}' was removed""",
+                f"""Name # {name_idx}: '{name_entry["name"]}' was removed""",
                 fg=typer.colors.GREEN,
             )
 
@@ -194,7 +280,55 @@ def remove(
             raise typer.Exit(1)
 
         delete = typer.confirm(
-            f"Delete name # {name_idx}: {name_entry['first_name']}?"
+            f"Delete name # {name_idx}: {name_entry['name']}?"
+        )
+        if delete:
+            _remove()
+        else:
+            typer.echo("Operation canceled")
+
+
+@app.command()
+def remove_surname(
+    surname_idx: int = typer.Argument(...),
+    force: bool = typer.Option(
+        False,
+        "--force",
+        "-f",
+        help="Force deletion without confirmation.",
+    ),
+) -> None:
+    """Remove a name using its index."""
+    namer = get_namer()
+
+    def _remove():
+        surname_entry, response = namer.remove_surname_by_idx(surname_idx)
+        if response:
+
+            typer.secho(
+                f'Removing surname # {surname_idx} failed with "{ERROR_STRINGS[response]}"',
+                fg=typer.colors.RED,
+            )
+            raise typer.Exit(1)
+
+        else:
+            typer.secho(
+                f"""Name # {surname_idx}: '{surname_entry["surname"]}' was removed""",
+                fg=typer.colors.GREEN,
+            )
+
+    if force:
+        _remove()
+    else:
+        surname_list = namer.get_surname_list()
+        try:
+            surname_entry = surname_list[surname_idx - 1]
+        except IndexError:
+            typer.secho("Invalid surname index", fg=typer.colors.RED)
+            raise typer.Exit(1)
+
+        delete = typer.confirm(
+            f"Delete surname # {surname_idx}: {surname_entry['surname']}?"
         )
         if delete:
             _remove()
@@ -215,11 +349,11 @@ def remove_all(
     namer = get_namer()
 
     if force:
-        error = namer.remove_all().error
+        response = namer.remove_all_names().response
 
-        if error:
+        if response:
             typer.secho(
-                f'Removing names failed with "{ERRORS[error]}"',
+                f'Removing names failed with "{ERROR_STRINGS[response]}"',
                 fg=typer.colors.RED,
             )
             raise typer.Exit(1)
@@ -228,6 +362,32 @@ def remove_all(
 
     else:
         typer.echo("Operation canceled")
+
+
+@app.command(name="generate")
+def generate(
+    number: int = typer.Option(
+        1,
+        "--number",
+        "-n",
+    )
+):
+
+    namer = get_namer()
+
+    generated_names = namer.generate_random_name_surname(number)
+
+    if len(generated_names) == 0:
+        typer.secho(
+            f"There are no names/surnames in database",
+            fg=typer.colors.RED,
+        )
+        raise typer.Exit(1)
+
+    for gen_name in generated_names:
+        typer.secho(f"{gen_name}", fg=typer.colors.BLUE)
+
+    raise typer.Exit()
 
 
 def _version_callback(value: bool) -> None:
