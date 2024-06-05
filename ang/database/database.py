@@ -132,7 +132,9 @@ class DatabaseHandler:
         database_read = self.read_database()
         database = database_read.database
 
-        database["names"] = name_list
+        database["names"] = sorted(
+            name_list, key=lambda x: x["name"], reverse=False
+        )
 
         database_write = self.write_database(database)
 
@@ -159,7 +161,9 @@ class DatabaseHandler:
         database_read = self.read_database()
         database = database_read.database
 
-        database["surnames"] = surname_list
+        database["surnames"] = sorted(
+            surname_list, key=lambda x: x["surname"], reverse=False
+        )
 
         database_write = self.write_database(database)
 
