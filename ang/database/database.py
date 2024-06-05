@@ -10,6 +10,7 @@ from typing import Any, Dict, List, NamedTuple, TypedDict
 from schema import SchemaError
 
 from ang import (
+    ALREADY_EXISTS_ERROR,
     DB_READ_ERROR,
     DB_WRITE_ERROR,
     JSON_ERROR,
@@ -18,7 +19,11 @@ from ang import (
 )
 from ang.database.presets.default_database import default_database_string
 from ang.database.presets.empty_database import empty_database_string
-from ang.database.schema import ang_database_schema, name_entry_schema
+from ang.database.schema import (
+    ang_database_schema,
+    name_entry_schema,
+    surname_entry_schema,
+)
 
 DEFAULT_DB_FILE_PATH = Path.home().joinpath(
     "." + Path.home().stem + "_ang_database.json"
@@ -106,6 +111,10 @@ class DatabaseHandler:
             return DBReadResponse(empty_database_string, DB_READ_ERROR)
 
     def write_database(self, database: ANGDatabase) -> DBCRUDResponse:
+
+        database["names"].sort(key=lambda x: x["name"], reverse=False)
+        database["surnames"].sort(key=lambda x: x["surname"], reverse=False)
+
         try:
             with self._db_path.open("w") as db:
                 json.dump(database, db, indent=4)
@@ -149,8 +158,11 @@ class DatabaseHandler:
 
         validated_name_entry = name_entry_schema.validate(name_entry)
 
-        database["names"].append(validated_name_entry)
+        for existing_name_entry in database["names"]:
+            if existing_name_entry["name"] == validated_name_entry["name"]:
+                return DBCRUDResponse(ALREADY_EXISTS_ERROR)
 
+        database["names"].append(validated_name_entry)
         database_write = self.write_database(database)
 
         return DBCRUDResponse(database_write.response_code)
@@ -164,6 +176,28 @@ class DatabaseHandler:
         database["surnames"] = sorted(
             surname_list, key=lambda x: x["surname"], reverse=False
         )
+
+        database_write = self.write_database(database)
+
+        return DBCRUDResponse(database_write.response_code)
+
+    def add_surname(
+        self,
+        surname_entry,
+    ) -> DBCRUDResponse:
+        database_read = self.read_database()
+        database = database_read.database
+
+        validated_surname_entry = surname_entry_schema.validate(surname_entry)
+
+        for existing_name_entry in database["surnames"]:
+            if (
+                existing_name_entry["surname"]
+                == validated_surname_entry["surname"]
+            ):
+                return DBCRUDResponse(ALREADY_EXISTS_ERROR)
+
+        database["surnames"].append(validated_surname_entry)
 
         database_write = self.write_database(database)
 

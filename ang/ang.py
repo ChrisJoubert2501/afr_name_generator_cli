@@ -34,15 +34,9 @@ class Namer:
             "prevalence": prevalence,
         }
 
-        read = self._db_handler.read_names()
+        reponse = self._db_handler.add_name(entry)
 
-        if read.response_code == DB_READ_ERROR:
-            return CurrentName(entry, read.response_code)
-
-        read.name_list.append(entry)
-        write = self._db_handler.write_names(read.name_list)
-
-        return CurrentName(entry, write.response_code)
+        return CurrentName(entry, reponse.response_code)
 
     def get_name_list(self) -> List[Dict[str, Any]]:
         """Return the name list."""
@@ -61,15 +55,9 @@ class Namer:
             "prevalence": prevalence,
         }
 
-        read = self._db_handler.read_surnames()
+        reponse = self._db_handler.add_surname(entry)
 
-        if read.response_code == DB_READ_ERROR:
-            return CurrentSurname(entry, read.response_code)
-
-        read.surname_list.append(entry)
-        write = self._db_handler.write_surnames(read.surname_list)
-
-        return CurrentSurname(entry, write.response_code)
+        return CurrentSurname(entry, reponse.response_code)
 
     def get_surname_list(self) -> List[Dict[str, Any]]:
         """Return the name list."""

@@ -5,4 +5,4 @@
 - [ ] Using "single add" for names and surnames
 - [ ] Use prevalence as probabilities during generation
 - [ ] Add man/woman/neutral names
-- [ ] Detect duplicates before adding name/surname
+- [x] Detect duplicates before adding name/surname

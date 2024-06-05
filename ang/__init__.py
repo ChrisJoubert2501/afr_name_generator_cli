@@ -15,7 +15,8 @@ __version__ = "0.1.0"
     SCHEMA_ERROR,
     NAME_IDX_ERROR,
     SURNAME_IDX_ERROR,
-) = range(9)
+    ALREADY_EXISTS_ERROR,
+) = range(10)
 
 ERROR_STRINGS = {
     DIR_ERROR: "config directory error",
@@ -25,4 +26,5 @@ ERROR_STRINGS = {
     SCHEMA_ERROR: "schema validation error",
     NAME_IDX_ERROR: "name index error",
     SURNAME_IDX_ERROR: "surname index error",
+    ALREADY_EXISTS_ERROR: "already exists error",
 }
