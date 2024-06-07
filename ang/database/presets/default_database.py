@@ -90,6 +90,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Duhann",
+            "prevalence": 10
+        },
+        {
             "name": "Estian",
             "prevalence": 10
         },
@@ -99,6 +103,10 @@ default_database_string = """
         },
         {
             "name": "Fanus",
+            "prevalence": 10
+        },
+        {
+            "name": "Ferdi",
             "prevalence": 10
         },
         {
@@ -119,6 +127,10 @@ default_database_string = """
         },
         {
             "name": "Gideon",
+            "prevalence": 10
+        },
+        {
+            "name": "Gysbert",
             "prevalence": 10
         },
         {
@@ -298,6 +310,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Ruan",
+            "prevalence": 10
+        },
+        {
             "name": "Ruben",
             "prevalence": 10
         },
@@ -388,6 +404,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Barendse",
+            "prevalence": 10
+        },
+        {
             "surname": "Barnard",
             "prevalence": 10
         },
@@ -401,6 +421,10 @@ default_database_string = """
         },
         {
             "surname": "Berg",
+            "prevalence": 10
+        },
+        {
+            "surname": "Bester",
             "prevalence": 10
         },
         {
@@ -428,6 +452,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Bornman",
+            "prevalence": 10
+        },
+        {
             "surname": "Bornmann",
             "prevalence": 10
         },
@@ -440,6 +468,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Botes",
+            "prevalence": 10
+        },
+        {
             "surname": "Botha",
             "prevalence": 10
         },
@@ -448,11 +480,31 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Breedt",
+            "prevalence": 10
+        },
+        {
             "surname": "Breytenbach",
             "prevalence": 10
         },
         {
+            "surname": "Briers",
+            "prevalence": 10
+        },
+        {
+            "surname": "Brink",
+            "prevalence": 10
+        },
+        {
             "surname": "Brits",
+            "prevalence": 10
+        },
+        {
+            "surname": "Britz",
+            "prevalence": 10
+        },
+        {
+            "surname": "Bronkhorst",
             "prevalence": 10
         },
         {
@@ -516,6 +568,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "De Swardt",
+            "prevalence": 10
+        },
+        {
             "surname": "De Villiers",
             "prevalence": 10
         },
@@ -540,6 +596,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Diedericks",
+            "prevalence": 10
+        },
+        {
             "surname": "Du Plessis",
             "prevalence": 10
         },
@@ -560,6 +620,14 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Ebbelaar",
+            "prevalence": 10
+        },
+        {
+            "surname": "Els",
+            "prevalence": 10
+        },
+        {
             "surname": "Engelbrecht",
             "prevalence": 10
         },
@@ -572,6 +640,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Everts",
+            "prevalence": 10
+        },
+        {
             "surname": "Fouche",
             "prevalence": 10
         },
@@ -581,6 +653,14 @@ default_database_string = """
         },
         {
             "surname": "Fourie",
+            "prevalence": 10
+        },
+        {
+            "surname": "Geldenhuys",
+            "prevalence": 10
+        },
+        {
+            "surname": "Germishuys",
             "prevalence": 10
         },
         {
@@ -608,7 +688,19 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Hattingh",
+            "prevalence": 10
+        },
+        {
+            "surname": "Hendriks",
+            "prevalence": 10
+        },
+        {
             "surname": "Henning",
+            "prevalence": 10
+        },
+        {
+            "surname": "Herselman",
             "prevalence": 10
         },
         {
@@ -628,11 +720,23 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Hoogenboezem",
+            "prevalence": 10
+        },
+        {
             "surname": "Hougaard",
             "prevalence": 10
         },
         {
             "surname": "Hugo",
+            "prevalence": 10
+        },
+        {
+            "surname": "Huisamen",
+            "prevalence": 10
+        },
+        {
+            "surname": "Human",
             "prevalence": 10
         },
         {
@@ -653,6 +757,10 @@ default_database_string = """
         },
         {
             "surname": "Jonker",
+            "prevalence": 10
+        },
+        {
+            "surname": "Jooste",
             "prevalence": 10
         },
         {
@@ -704,7 +812,15 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Labuschagne",
+            "prevalence": 10
+        },
+        {
             "surname": "Langenhoven",
+            "prevalence": 10
+        },
+        {
+            "surname": "Lategan",
             "prevalence": 10
         },
         {
@@ -748,6 +864,14 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Louwrens",
+            "prevalence": 10
+        },
+        {
+            "surname": "Luyt",
+            "prevalence": 10
+        },
+        {
             "surname": "Maartens",
             "prevalence": 10
         },
@@ -772,11 +896,23 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Martins",
+            "prevalence": 10
+        },
+        {
+            "surname": "Marx",
+            "prevalence": 10
+        },
+        {
             "surname": "Meintjes",
             "prevalence": 10
         },
         {
             "surname": "Meiring",
+            "prevalence": 10
+        },
+        {
+            "surname": "Menssink",
             "prevalence": 10
         },
         {
@@ -821,6 +957,10 @@ default_database_string = """
         },
         {
             "surname": "Nel",
+            "prevalence": 10
+        },
+        {
+            "surname": "Niemand",
             "prevalence": 10
         },
         {
@@ -892,6 +1032,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Putter",
+            "prevalence": 10
+        },
+        {
             "surname": "Rademan",
             "prevalence": 10
         },
@@ -905,6 +1049,10 @@ default_database_string = """
         },
         {
             "surname": "Roberts",
+            "prevalence": 10
+        },
+        {
+            "surname": "Roelofse",
             "prevalence": 10
         },
         {
@@ -976,6 +1124,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Stegmann",
+            "prevalence": 10
+        },
+        {
             "surname": "Steyn",
             "prevalence": 10
         },
@@ -1004,6 +1156,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Temperman",
+            "prevalence": 10
+        },
+        {
             "surname": "Terblanche",
             "prevalence": 10
         },
@@ -1024,7 +1180,15 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Van Amstel",
+            "prevalence": 10
+        },
+        {
             "surname": "Van As",
+            "prevalence": 10
+        },
+        {
+            "surname": "Van Aswegen",
             "prevalence": 10
         },
         {
@@ -1100,15 +1264,15 @@ default_database_string = """
             "prevalence": 10
         },
         {
-            "surname": "Van Jacobs",
-            "prevalence": 10
-        },
-        {
             "surname": "Van Niekerk",
             "prevalence": 10
         },
         {
             "surname": "Van Onselen",
+            "prevalence": 10
+        },
+        {
+            "surname": "Van Reenen",
             "prevalence": 10
         },
         {
@@ -1200,7 +1364,19 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Wannenburg",
+            "prevalence": 10
+        },
+        {
             "surname": "Wessels",
+            "prevalence": 10
+        },
+        {
+            "surname": "Wewege",
+            "prevalence": 10
+        },
+        {
+            "surname": "Weyer",
             "prevalence": 10
         },
         {
@@ -1209,6 +1385,10 @@ default_database_string = """
         },
         {
             "surname": "Willemse",
+            "prevalence": 10
+        },
+        {
+            "surname": "Wolfaardt",
             "prevalence": 10
         },
         {
