@@ -10,6 +10,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Alwyn",
+            "prevalence": 10
+        },
+        {
             "name": "Andries",
             "prevalence": 10
         },
@@ -18,7 +22,15 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Anton",
+            "prevalence": 10
+        },
+        {
             "name": "Arno",
+            "prevalence": 10
+        },
+        {
+            "name": "Ben",
             "prevalence": 10
         },
         {
@@ -94,11 +106,19 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Eben",
+            "prevalence": 10
+        },
+        {
             "name": "Estian",
             "prevalence": 10
         },
         {
             "name": "Etienne",
+            "prevalence": 10
+        },
+        {
+            "name": "Fanie",
             "prevalence": 10
         },
         {
@@ -139,6 +159,10 @@ default_database_string = """
         },
         {
             "name": "Heinrich",
+            "prevalence": 10
+        },
+        {
+            "name": "Hendrik",
             "prevalence": 10
         },
         {
@@ -186,6 +210,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Josef",
+            "prevalence": 10
+        },
+        {
             "name": "Joshua",
             "prevalence": 10
         },
@@ -210,6 +238,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Leon",
+            "prevalence": 10
+        },
+        {
             "name": "Luan",
             "prevalence": 10
         },
@@ -226,6 +258,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Marius",
+            "prevalence": 10
+        },
+        {
             "name": "Marnus",
             "prevalence": 10
         },
@@ -235,6 +271,10 @@ default_database_string = """
         },
         {
             "name": "Mauritz",
+            "prevalence": 10
+        },
+        {
+            "name": "Michael",
             "prevalence": 10
         },
         {
@@ -251,6 +291,14 @@ default_database_string = """
         },
         {
             "name": "Nelius",
+            "prevalence": 10
+        },
+        {
+            "name": "Nico",
+            "prevalence": 10
+        },
+        {
+            "name": "Nicolaas",
             "prevalence": 10
         },
         {
@@ -282,6 +330,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Pik",
+            "prevalence": 10
+        },
+        {
             "name": "Renier",
             "prevalence": 10
         },
@@ -306,6 +358,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Rikus",
+            "prevalence": 10
+        },
+        {
             "name": "Ruag",
             "prevalence": 10
         },
@@ -315,6 +371,10 @@ default_database_string = """
         },
         {
             "name": "Ruben",
+            "prevalence": 10
+        },
+        {
+            "name": "Sakkie",
             "prevalence": 10
         },
         {
@@ -370,6 +430,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "name": "Werner",
+            "prevalence": 10
+        },
+        {
             "name": "Wian",
             "prevalence": 10
         },
@@ -379,6 +443,18 @@ default_database_string = """
         },
         {
             "name": "Willem",
+            "prevalence": 10
+        },
+        {
+            "name": "Willie",
+            "prevalence": 10
+        },
+        {
+            "name": "Winand",
+            "prevalence": 10
+        },
+        {
+            "name": "Wouter",
             "prevalence": 10
         },
         {
@@ -660,6 +736,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Gerber",
+            "prevalence": 10
+        },
+        {
             "surname": "Germishuys",
             "prevalence": 10
         },
@@ -685,6 +765,10 @@ default_database_string = """
         },
         {
             "surname": "Hanekom",
+            "prevalence": 10
+        },
+        {
+            "surname": "Hartmann",
             "prevalence": 10
         },
         {
@@ -804,6 +888,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Kritzinger",
+            "prevalence": 10
+        },
+        {
             "surname": "Kruger",
             "prevalence": 10
         },
@@ -845,6 +933,10 @@ default_database_string = """
         },
         {
             "surname": "Lodewyk",
+            "prevalence": 10
+        },
+        {
+            "surname": "Loggenberg",
             "prevalence": 10
         },
         {
@@ -980,6 +1072,10 @@ default_database_string = """
             "prevalence": 10
         },
         {
+            "surname": "Oberholzer",
+            "prevalence": 10
+        },
+        {
             "surname": "Odendaal",
             "prevalence": 10
         },
@@ -1109,6 +1205,10 @@ default_database_string = """
         },
         {
             "surname": "Snyman",
+            "prevalence": 10
+        },
+        {
+            "surname": "Spangenberg",
             "prevalence": 10
         },
         {
