@@ -24,6 +24,15 @@ def test_version():
     assert f"{__app_name__} v{__version__}\n" in result.stdout
 
 
+def test_root_command_shows_help():
+    result = runner.invoke(cli.app)
+
+    assert result.exit_code == 0
+    assert "Usage:" in result.output
+    assert "Commands" in result.output
+    assert "init" in result.output
+
+
 def test_cli_error_message_handles_json_errors():
     assert presenter.get_error_message(JSON_ERROR) == "database JSON error"
 

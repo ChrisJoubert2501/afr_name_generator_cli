@@ -8,7 +8,7 @@ import typer
 from ang import __app_name__, __version__, ang, config, presenter
 from ang.database import database
 
-app = typer.Typer()
+app = typer.Typer(no_args_is_help=True)
 
 
 @app.command()
