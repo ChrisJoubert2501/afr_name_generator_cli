@@ -116,7 +116,7 @@ def test_set_prevalence_cli_uses_name_key(tmp_path, monkeypatch):
     config_file.write_text(f"[General]\ndatabase = {db_file}\n")
     monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
 
-    result = runner.invoke(cli.app, ["set_prevalence", "1", "4"])
+    result = runner.invoke(cli.app, ["set-prevalence", "1", "4"])
 
     assert result.exit_code == 0
     assert 'Success: Set prevalence (4) on name # 1 "Pieter"' in result.stdout

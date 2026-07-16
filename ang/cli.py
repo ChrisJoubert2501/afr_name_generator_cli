@@ -195,7 +195,7 @@ def list_all() -> None:
     _list_all_surnames()
 
 
-@app.command(name="set_prevalence")
+@app.command(name="set-prevalence")
 def set_prevalence(
     name_index: int = typer.Argument(...),
     new_prevalence: int = typer.Argument(..., min=1, max=10),
