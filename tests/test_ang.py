@@ -5,7 +5,16 @@ import json
 import pytest
 from typer.testing import CliRunner
 
-from ang import JSON_ERROR, NAME_IDX_ERROR, SUCCESS, SURNAME_IDX_ERROR, __app_name__, __version__, ang, cli
+from ang import (
+    JSON_ERROR,
+    NAME_IDX_ERROR,
+    SUCCESS,
+    SURNAME_IDX_ERROR,
+    __app_name__,
+    __version__,
+    ang,
+    cli,
+)
 
 runner = CliRunner()
 
@@ -21,15 +30,36 @@ def test_cli_error_message_handles_json_errors():
 
 
 @pytest.fixture
-def mock_json_file(tmp_path):
-    database = {
-        "names": [{"name": "Pieter", "prevalence": 10}],
-        "surnames": [],
-    }
-    db_file = tmp_path / "ang.json"
-    with db_file.open("w") as db:
-        json.dump(database, db, indent=4)
-    return db_file
+def database_file(tmp_path):
+    def _database_file(database):
+        db_file = tmp_path / "ang.json"
+        with db_file.open("w") as db:
+            json.dump(database, db, indent=4)
+        return db_file
+
+    return _database_file
+
+
+@pytest.fixture
+def configured_cli_database(tmp_path, monkeypatch, database_file):
+    def _configured_cli_database(database):
+        db_file = database_file(database)
+        config_file = tmp_path / "config.ini"
+        config_file.write_text(f"[General]\ndatabase = {db_file}\n")
+        monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+        return db_file
+
+    return _configured_cli_database
+
+
+@pytest.fixture
+def mock_json_file(database_file):
+    return database_file(
+        {
+            "names": [{"name": "Pieter", "prevalence": 10}],
+            "surnames": [],
+        }
+    )
 
 
 test_data1 = {
@@ -73,7 +103,7 @@ def test_generate_returns_empty_when_names_or_surnames_are_missing(
     assert namer.generate_random_name_surname(1) == []
 
 
-def test_generate_uses_prevalence_as_weights(tmp_path, monkeypatch):
+def test_generate_uses_prevalence_as_weights(database_file, monkeypatch):
     database = {
         "names": [
             {"name": "Pieter", "prevalence": 10},
@@ -84,9 +114,7 @@ def test_generate_uses_prevalence_as_weights(tmp_path, monkeypatch):
             {"surname": "Nel", "prevalence": 2},
         ],
     }
-    db_file = tmp_path / "ang.json"
-    with db_file.open("w") as db:
-        json.dump(database, db, indent=4)
+    db_file = database_file(database)
 
     calls = []
 
@@ -107,18 +135,13 @@ def test_generate_uses_prevalence_as_weights(tmp_path, monkeypatch):
     ]
 
 
-def test_set_prevalence_cli_uses_name_key(tmp_path, monkeypatch):
-    database = {
-        "names": [{"name": "Pieter", "prevalence": 10}],
-        "surnames": [],
-    }
-    db_file = tmp_path / "ang.json"
-    with db_file.open("w") as db:
-        json.dump(database, db, indent=4)
-
-    config_file = tmp_path / "config.ini"
-    config_file.write_text(f"[General]\ndatabase = {db_file}\n")
-    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+def test_set_prevalence_cli_uses_name_key(configured_cli_database):
+    configured_cli_database(
+        {
+            "names": [{"name": "Pieter", "prevalence": 10}],
+            "surnames": [],
+        }
+    )
 
     result = runner.invoke(cli.app, ["set-prevalence", "1", "4"])
 
@@ -126,18 +149,13 @@ def test_set_prevalence_cli_uses_name_key(tmp_path, monkeypatch):
     assert 'Success: Set prevalence (4) on name # 1 "Pieter"' in result.stdout
 
 
-def test_list_commands_show_names_and_surnames(tmp_path, monkeypatch):
-    database = {
-        "names": [{"name": "Pieter", "prevalence": 10}],
-        "surnames": [{"surname": "Botha", "prevalence": 8}],
-    }
-    db_file = tmp_path / "ang.json"
-    with db_file.open("w") as db:
-        json.dump(database, db, indent=4)
-
-    config_file = tmp_path / "config.ini"
-    config_file.write_text(f"[General]\ndatabase = {db_file}\n")
-    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+def test_list_commands_show_names_and_surnames(configured_cli_database):
+    configured_cli_database(
+        {
+            "names": [{"name": "Pieter", "prevalence": 10}],
+            "surnames": [{"surname": "Botha", "prevalence": 8}],
+        }
+    )
 
     names_result = runner.invoke(cli.app, ["list-names"])
     surnames_result = runner.invoke(cli.app, ["list-surnames"])
@@ -150,18 +168,13 @@ def test_list_commands_show_names_and_surnames(tmp_path, monkeypatch):
     assert "Botha" in surnames_result.stdout
 
 
-def test_remove_surname_cli_uses_surname_wording(tmp_path, monkeypatch):
-    database = {
-        "names": [],
-        "surnames": [{"surname": "Botha", "prevalence": 8}],
-    }
-    db_file = tmp_path / "ang.json"
-    with db_file.open("w") as db:
-        json.dump(database, db, indent=4)
-
-    config_file = tmp_path / "config.ini"
-    config_file.write_text(f"[General]\ndatabase = {db_file}\n")
-    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+def test_remove_surname_cli_uses_surname_wording(configured_cli_database):
+    configured_cli_database(
+        {
+            "names": [],
+            "surnames": [{"surname": "Botha", "prevalence": 8}],
+        }
+    )
 
     result = runner.invoke(cli.app, ["remove-surname", "1", "--force"])
 
@@ -183,14 +196,12 @@ def test_name_indexes_are_one_based(mock_json_file):
     assert namer.remove_name_by_idx(0).response == NAME_IDX_ERROR
 
 
-def test_surname_indexes_are_one_based(tmp_path):
+def test_surname_indexes_are_one_based(database_file):
     database = {
         "names": [],
         "surnames": [{"surname": "Botha", "prevalence": 10}],
     }
-    db_file = tmp_path / "ang.json"
-    with db_file.open("w") as db:
-        json.dump(database, db, indent=4)
+    db_file = database_file(database)
 
     namer = ang.Namer(db_file)
 
