@@ -2,7 +2,15 @@
 
 ### How to run
 
+Create and activate a local virtual environment:
+`python3 -m venv .venv`
+`source .venv/bin/activate`
+
+On Debian/Ubuntu, install `python3-venv` first if virtual environment creation fails:
+`sudo apt install python3.10-venv`
+
 Install for local development:
+`python -m pip install --upgrade pip setuptools`
 `python -m pip install -e .[dev]`
 
 Initialise database:  
