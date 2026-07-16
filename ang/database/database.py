@@ -130,70 +130,63 @@ class DatabaseHandler:
         )
 
     def write_names(self, name_list: List[Dict[str, Any]]) -> DBCRUDResponse:
-        database_read = self.read_database()
-        database = database_read.database
-
-        database["names"] = sorted(
-            name_list, key=lambda x: x["name"], reverse=False
-        )
-
-        database_write = self.write_database(database)
-
-        return DBCRUDResponse(database_write.response_code)
+        return self._write_entries("names", "name", name_list)
 
     def add_name(
         self,
         name_entry,
     ) -> DBCRUDResponse:
-        database_read = self.read_database()
-        database = database_read.database
-
-        name_entry["name"] = name_entry["name"].title()
-
-        validated_name_entry = name_entry_schema.validate(name_entry)
-
-        for existing_name_entry in database["names"]:
-            if existing_name_entry["name"] == validated_name_entry["name"]:
-                return DBCRUDResponse(ALREADY_EXISTS_ERROR)
-
-        database["names"].append(validated_name_entry)
-        database_write = self.write_database(database)
-
-        return DBCRUDResponse(database_write.response_code)
+        return self._add_entry("names", "name", name_entry, name_entry_schema)
 
     def write_surnames(
         self, surname_list: List[Dict[str, Any]]
     ) -> DBCRUDResponse:
+        return self._write_entries("surnames", "surname", surname_list)
+
+    def add_surname(
+        self,
+        surname_entry,
+    ) -> DBCRUDResponse:
+        return self._add_entry(
+            "surnames", "surname", surname_entry, surname_entry_schema
+        )
+
+    def _write_entries(
+        self,
+        collection_key: str,
+        entry_key: str,
+        entries: List[Dict[str, Any]],
+    ) -> DBCRUDResponse:
         database_read = self.read_database()
         database = database_read.database
 
-        database["surnames"] = sorted(
-            surname_list, key=lambda x: x["surname"], reverse=False
+        database[collection_key] = sorted(
+            entries, key=lambda x: x[entry_key], reverse=False
         )
 
         database_write = self.write_database(database)
 
         return DBCRUDResponse(database_write.response_code)
 
-    def add_surname(
+    def _add_entry(
         self,
-        surname_entry,
+        collection_key: str,
+        entry_key: str,
+        entry: Dict[str, Any],
+        entry_schema,
     ) -> DBCRUDResponse:
         database_read = self.read_database()
         database = database_read.database
 
-        surname_entry["surname"] = surname_entry["surname"].title()
+        entry[entry_key] = entry[entry_key].title()
 
-        validated_surname_entry = surname_entry_schema.validate(surname_entry)
+        validated_entry = entry_schema.validate(entry)
 
-        for existing_name_entry in database["surnames"]:
-            if (
-                existing_name_entry["surname"]
-                == validated_surname_entry["surname"]
-            ):
+        for existing_entry in database[collection_key]:
+            if existing_entry[entry_key] == validated_entry[entry_key]:
                 return DBCRUDResponse(ALREADY_EXISTS_ERROR)
 
-        database["surnames"].append(validated_surname_entry)
+        database[collection_key].append(validated_entry)
 
         database_write = self.write_database(database)
 

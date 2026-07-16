@@ -6,7 +6,7 @@ import random
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple
 
-from ang import NAME_IDX_ERROR, SURNAME_IDX_ERROR
+from ang import NAME_IDX_ERROR, SUCCESS, SURNAME_IDX_ERROR
 from ang.database.database import DatabaseHandler
 
 
@@ -65,16 +65,30 @@ class Namer:
     def add_name(self, name_input: List[str], prevalence: int) -> CurrentName:
         """Add a new name to the database."""
 
-        name_text = " ".join(name_input)
+        return self._add_entry_response(
+            name_input,
+            prevalence,
+            "name",
+            self._db_handler.add_name,
+            CurrentName,
+        )
 
+    def _add_entry_response(
+        self,
+        entry_input: List[str],
+        prevalence: int,
+        entry_key: str,
+        add_entry,
+        response_type,
+    ):
         entry = {
-            "name": name_text,
+            entry_key: " ".join(entry_input),
             "prevalence": prevalence,
         }
 
-        response = self._db_handler.add_name(entry)
+        response = add_entry(entry)
 
-        return CurrentName(entry, response.response_code)
+        return response_type(entry, response.response_code)
 
     def get_name_list(self) -> CurrentNameList:
         """Return the name list."""
@@ -86,16 +100,13 @@ class Namer:
     ) -> CurrentSurname:
         """Add a new surname to the database."""
 
-        surname_text = " ".join(surname_input)
-
-        entry = {
-            "surname": surname_text,
-            "prevalence": prevalence,
-        }
-
-        response = self._db_handler.add_surname(entry)
-
-        return CurrentSurname(entry, response.response_code)
+        return self._add_entry_response(
+            surname_input,
+            prevalence,
+            "surname",
+            self._db_handler.add_surname,
+            CurrentSurname,
+        )
 
     def get_surname_list(self) -> CurrentSurnameList:
         """Return the surname list."""
@@ -138,6 +149,48 @@ class Namer:
 
         return CurrentName(name_entry, write.response_code)
 
+    def _get_entry_response(
+        self,
+        entries: List[Dict[str, Any]],
+        entry_key: str,
+        identifier: str,
+        error_code: int,
+        response_type,
+    ):
+        try:
+            entry = self._get_entry_by_identifier(
+                entries, entry_key, identifier
+            )
+        except IndexError:
+            return response_type({}, error_code)
+
+        return response_type(entry, SUCCESS)
+
+    def _remove_entry_response(
+        self,
+        entries: List[Dict[str, Any]],
+        write_entries,
+        entry_key: str,
+        identifier: str,
+        error_code: int,
+        response_type,
+    ):
+        entry, response = self._get_entry_response(
+            entries, entry_key, identifier, error_code, response_type
+        )
+
+        if response:
+            return response_type({}, response)
+
+        try:
+            entries.remove(entry)
+        except ValueError:
+            return response_type({}, error_code)
+
+        write = write_entries(entries)
+
+        return response_type(entry, write.response_code)
+
     def remove_name(self, name_identifier: str) -> CurrentName:
         """Remove a name from the database using its index or value."""
         read = self._db_handler.read_names()
@@ -145,15 +198,14 @@ class Namer:
         if read.response_code:
             return CurrentName({}, read.response_code)
 
-        try:
-            name_entry = self.get_name(name_identifier).name
-            read.name_list.remove(name_entry)
-        except (IndexError, ValueError):
-            return CurrentName({}, NAME_IDX_ERROR)
-
-        write = self._db_handler.write_names(read.name_list)
-
-        return CurrentName(name_entry, write.response_code)
+        return self._remove_entry_response(
+            read.name_list,
+            self._db_handler.write_names,
+            "name",
+            name_identifier,
+            NAME_IDX_ERROR,
+            CurrentName,
+        )
 
     def get_name(self, name_identifier: str) -> CurrentName:
         """Return a name using its index or value."""
@@ -163,14 +215,13 @@ class Namer:
         if read.response_code:
             return CurrentName({}, read.response_code)
 
-        try:
-            name_entry = self._get_entry_by_identifier(
-                read.name_list, "name", name_identifier
-            )
-        except IndexError:
-            return CurrentName({}, NAME_IDX_ERROR)
-
-        return CurrentName(name_entry, read.response_code)
+        return self._get_entry_response(
+            read.name_list,
+            "name",
+            name_identifier,
+            NAME_IDX_ERROR,
+            CurrentName,
+        )
 
     def remove_surname_by_idx(self, surname_idx: int) -> CurrentSurname:
         """Remove a surname from the database using its index."""
@@ -197,15 +248,14 @@ class Namer:
         if read.response_code:
             return CurrentSurname({}, read.response_code)
 
-        try:
-            surname_entry = self.get_surname(surname_identifier).surname
-            read.surname_list.remove(surname_entry)
-        except (IndexError, ValueError):
-            return CurrentSurname({}, SURNAME_IDX_ERROR)
-
-        write = self._db_handler.write_surnames(read.surname_list)
-
-        return CurrentSurname(surname_entry, write.response_code)
+        return self._remove_entry_response(
+            read.surname_list,
+            self._db_handler.write_surnames,
+            "surname",
+            surname_identifier,
+            SURNAME_IDX_ERROR,
+            CurrentSurname,
+        )
 
     def get_surname(self, surname_identifier: str) -> CurrentSurname:
         """Return a surname using its index or value."""
@@ -215,14 +265,13 @@ class Namer:
         if read.response_code:
             return CurrentSurname({}, read.response_code)
 
-        try:
-            surname_entry = self._get_entry_by_identifier(
-                read.surname_list, "surname", surname_identifier
-            )
-        except IndexError:
-            return CurrentSurname({}, SURNAME_IDX_ERROR)
-
-        return CurrentSurname(surname_entry, read.response_code)
+        return self._get_entry_response(
+            read.surname_list,
+            "surname",
+            surname_identifier,
+            SURNAME_IDX_ERROR,
+            CurrentSurname,
+        )
 
     def remove_all(self) -> CurrentName:
         """Remove all first names and surnames from the database."""
