@@ -14,6 +14,7 @@ from ang import (
     __version__,
     ang,
     cli,
+    presenter,
 )
 
 runner = CliRunner()
@@ -26,7 +27,7 @@ def test_version():
 
 
 def test_cli_error_message_handles_json_errors():
-    assert cli._get_error_message(JSON_ERROR) == "database JSON error"
+    assert presenter.get_error_message(JSON_ERROR) == "database JSON error"
 
 
 def test_cli_handles_invalid_config_file(tmp_path, monkeypatch):
