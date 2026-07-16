@@ -122,6 +122,30 @@ def test_set_prevalence_cli_uses_name_key(tmp_path, monkeypatch):
     assert 'Success: Set prevalence (4) on name # 1 "Pieter"' in result.stdout
 
 
+def test_list_commands_show_names_and_surnames(tmp_path, monkeypatch):
+    database = {
+        "names": [{"name": "Pieter", "prevalence": 10}],
+        "surnames": [{"surname": "Botha", "prevalence": 8}],
+    }
+    db_file = tmp_path / "ang.json"
+    with db_file.open("w") as db:
+        json.dump(database, db, indent=4)
+
+    config_file = tmp_path / "config.ini"
+    config_file.write_text(f"[General]\ndatabase = {db_file}\n")
+    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+
+    names_result = runner.invoke(cli.app, ["list-names"])
+    surnames_result = runner.invoke(cli.app, ["list-surnames"])
+
+    assert names_result.exit_code == 0
+    assert "Name list:" in names_result.stdout
+    assert "Pieter" in names_result.stdout
+    assert surnames_result.exit_code == 0
+    assert "Surname list:" in surnames_result.stdout
+    assert "Botha" in surnames_result.stdout
+
+
 def test_name_indexes_are_one_based(mock_json_file):
     namer = ang.Namer(mock_json_file)
 

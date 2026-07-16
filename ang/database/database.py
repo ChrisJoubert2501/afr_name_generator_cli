@@ -2,7 +2,6 @@
 
 """This module provides the ANG database functionality."""
 
-import configparser
 import json
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple, TypedDict
@@ -28,13 +27,6 @@ from ang.database.schema import (
 DEFAULT_DB_FILE_PATH = Path.home().joinpath(
     "." + Path.home().stem + "_ang_database.json"
 )
-
-
-def get_database_path(config_file: Path) -> Path:
-    """Return the current path to the database."""
-    config_parser = configparser.ConfigParser()
-    config_parser.read(config_file)
-    return Path(config_parser["General"]["database"])
 
 
 def init_database(db_path: Path) -> int:

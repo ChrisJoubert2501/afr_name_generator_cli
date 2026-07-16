@@ -44,3 +44,10 @@ def _save_database_path(db_path: str) -> int:
     except OSError:
         return DB_WRITE_ERROR
     return SUCCESS
+
+
+def get_database_path(config_file: Path) -> Path:
+    """Return the current path to the database."""
+    config_parser = configparser.ConfigParser()
+    config_parser.read(config_file)
+    return Path(config_parser["General"]["database"])
