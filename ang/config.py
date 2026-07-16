@@ -17,14 +17,13 @@ def init_app(db_path: str) -> int:
     config_code = _init_config_file()
     if config_code != SUCCESS:
         return config_code
-    database_code = _create_database(db_path)
-    if database_code != SUCCESS:
-        return database_code
+    save_path_code = _save_database_path(db_path)
+    if save_path_code != SUCCESS:
+        return save_path_code
     return SUCCESS
 
 
 def _init_config_file() -> int:
-    print(CONFIG_DIR_PATH)
     try:
         CONFIG_DIR_PATH.mkdir(exist_ok=True)
     except OSError:
@@ -36,7 +35,7 @@ def _init_config_file() -> int:
     return SUCCESS
 
 
-def _create_database(db_path: str) -> int:
+def _save_database_path(db_path: str) -> int:
     config_parser = configparser.ConfigParser()
     config_parser["General"] = {"database": db_path}
     try:
