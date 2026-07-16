@@ -155,29 +155,56 @@ def list_all() -> None:
     _list_all_surnames()
 
 
-@app.command(name="set-prevalence")
-def set_prevalence(
-    name_index: int = typer.Argument(...),
+@app.command(name="set-name-prevalence")
+def set_name_prevalence(
+    name_identifier: str = typer.Argument(...),
     new_prevalence: int = typer.Argument(..., min=1, max=10),
 ) -> None:
-    """Set a name's prevalence using its index."""
+    """Set a name's prevalence using its index or value."""
 
     namer = get_namer()
 
     name_entry, response = namer.set_name_prevalence(
-        name_index, new_prevalence
+        name_identifier, new_prevalence
     )
 
     if response:
         presenter.exit_with_error(
-            f'Setting prevalence on name # "{name_index}" failed with',
+            f'Setting prevalence on name "{name_identifier}" failed with',
             response,
         )
 
     else:
         presenter.success(
             f"Success: Set prevalence ({name_entry['prevalence']}) "
-            f'on name # {name_index} "{name_entry["name"]}" '
+            f'on name "{name_entry["name"]}"'
+        )
+
+
+@app.command(name="set-surname-prevalence")
+def set_surname_prevalence(
+    surname_identifier: str = typer.Argument(...),
+    new_prevalence: int = typer.Argument(..., min=1, max=10),
+) -> None:
+    """Set a surname's prevalence using its index or value."""
+
+    namer = get_namer()
+
+    surname_entry, response = namer.set_surname_prevalence(
+        surname_identifier, new_prevalence
+    )
+
+    if response:
+        presenter.exit_with_error(
+            "Setting prevalence on surname "
+            f'"{surname_identifier}" failed with',
+            response,
+        )
+
+    else:
+        presenter.success(
+            f"Success: Set prevalence ({surname_entry['prevalence']}) "
+            f'on surname "{surname_entry["surname"]}"'
         )
 
 

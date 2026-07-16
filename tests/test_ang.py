@@ -31,6 +31,13 @@ def test_root_command_shows_help():
     assert "Usage:" in result.output
     assert "Commands" in result.output
     assert "init" in result.output
+    assert "set-prevalence" not in result.output
+    assert "set-name-prevalence" in result.output
+    assert "Set a name's prevalence using its index or value." in result.output
+    assert "set-surname-prevalence" in result.output
+    assert (
+        "Set a surname's prevalence using its index or value." in result.output
+    )
 
 
 def test_cli_error_message_handles_json_errors():
@@ -167,7 +174,9 @@ def test_generate_uses_prevalence_as_weights(database_file, monkeypatch):
     ]
 
 
-def test_set_prevalence_cli_uses_name_key(configured_cli_database):
+def test_set_name_prevalence_cli_accepts_name_index(
+    configured_cli_database,
+):
     configured_cli_database(
         {
             "names": [{"name": "Pieter", "prevalence": 10}],
@@ -175,10 +184,48 @@ def test_set_prevalence_cli_uses_name_key(configured_cli_database):
         }
     )
 
-    result = runner.invoke(cli.app, ["set-prevalence", "1", "4"])
+    result = runner.invoke(cli.app, ["set-name-prevalence", "1", "4"])
 
     assert result.exit_code == 0
-    assert 'Success: Set prevalence (4) on name # 1 "Pieter"' in result.stdout
+    assert 'Success: Set prevalence (4) on name "Pieter"' in result.stdout
+
+
+def test_set_name_prevalence_cli_accepts_name_value(
+    configured_cli_database,
+):
+    db_file = configured_cli_database(
+        {
+            "names": [{"name": "Pieter", "prevalence": 10}],
+            "surnames": [],
+        }
+    )
+
+    result = runner.invoke(cli.app, ["set-name-prevalence", "pieter", "4"])
+
+    assert result.exit_code == 0
+    assert 'Success: Set prevalence (4) on name "Pieter"' in result.stdout
+    with db_file.open("r") as db:
+        database = json.load(db)
+    assert database["names"] == [{"name": "Pieter", "prevalence": 4}]
+
+
+def test_set_surname_prevalence_cli_accepts_surname_value(
+    configured_cli_database,
+):
+    db_file = configured_cli_database(
+        {
+            "names": [],
+            "surnames": [{"surname": "Botha", "prevalence": 8}],
+        }
+    )
+
+    result = runner.invoke(cli.app, ["set-surname-prevalence", "botha", "4"])
+
+    assert result.exit_code == 0
+    assert 'Success: Set prevalence (4) on surname "Botha"' in result.stdout
+    with db_file.open("r") as db:
+        database = json.load(db)
+    assert database["surnames"] == [{"surname": "Botha", "prevalence": 4}]
 
 
 def test_list_commands_show_names_and_surnames(configured_cli_database):
@@ -295,7 +342,7 @@ def test_generate_rejects_non_positive_number():
 def test_name_indexes_are_one_based(names_only_database_file):
     namer = ang.Namer(names_only_database_file)
 
-    assert namer.set_name_prevalence(0, 4).response == NAME_IDX_ERROR
+    assert namer.set_name_prevalence("0", 4).response == NAME_IDX_ERROR
     assert namer.remove_name_by_idx(0).response == NAME_IDX_ERROR
 
 
@@ -308,4 +355,5 @@ def test_surname_indexes_are_one_based(database_file):
 
     namer = ang.Namer(db_file)
 
+    assert namer.set_surname_prevalence("0", 4).response == SURNAME_IDX_ERROR
     assert namer.remove_surname_by_idx(0).response == SURNAME_IDX_ERROR

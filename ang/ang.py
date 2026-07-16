@@ -49,6 +49,8 @@ class Namer:
         entry_key: str,
         identifier: str,
     ) -> Dict[str, Any]:
+        identifier = str(identifier)
+
         if cls._is_index_identifier(identifier):
             return entries[cls._to_list_index(int(identifier))]
 
@@ -111,25 +113,67 @@ class Namer:
         read = self._db_handler.read_surnames()
         return CurrentSurnameList(read.surname_list, read.response_code)
 
+    def _set_entry_prevalence_response(
+        self,
+        entries: List[Dict[str, Any]],
+        write_entries,
+        entry_key: str,
+        identifier: str,
+        new_prevalence: int,
+        error_code: int,
+        response_type,
+    ):
+        entry, response = self._get_entry_response(
+            entries, entry_key, identifier, error_code, response_type
+        )
+
+        if response:
+            return response_type({}, response)
+
+        entry["prevalence"] = new_prevalence
+        write = write_entries(entries)
+
+        return response_type(entry, write.response_code)
+
     def set_name_prevalence(
-        self, name_idx: int, new_prevalence: int
+        self, name_identifier: str, new_prevalence: int
     ) -> CurrentName:
-        """Set a prevalence on a name."""
+        """Set a prevalence on a name using its index or value."""
 
         read = self._db_handler.read_names()
 
         if read.response_code:
             return CurrentName({}, read.response_code)
 
-        try:
-            name_entry = read.name_list[self._to_list_index(name_idx)]
-        except IndexError:
-            return CurrentName({}, NAME_IDX_ERROR)
+        return self._set_entry_prevalence_response(
+            read.name_list,
+            self._db_handler.write_names,
+            "name",
+            name_identifier,
+            new_prevalence,
+            NAME_IDX_ERROR,
+            CurrentName,
+        )
 
-        name_entry["prevalence"] = new_prevalence
-        write = self._db_handler.write_names(read.name_list)
+    def set_surname_prevalence(
+        self, surname_identifier: str, new_prevalence: int
+    ) -> CurrentSurname:
+        """Set a prevalence on a surname using its index or value."""
 
-        return CurrentName(name_entry, write.response_code)
+        read = self._db_handler.read_surnames()
+
+        if read.response_code:
+            return CurrentSurname({}, read.response_code)
+
+        return self._set_entry_prevalence_response(
+            read.surname_list,
+            self._db_handler.write_surnames,
+            "surname",
+            surname_identifier,
+            new_prevalence,
+            SURNAME_IDX_ERROR,
+            CurrentSurname,
+        )
 
     def remove_name_by_idx(self, name_idx: int) -> CurrentName:
         """Remove a name from the database using its index."""
