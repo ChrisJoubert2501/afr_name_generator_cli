@@ -2,6 +2,9 @@
 
 ### How to run
 
+Install for local development:
+`python -m pip install -e .[dev]`
+
 Initialise database:  
 `python -m ang init`
 
