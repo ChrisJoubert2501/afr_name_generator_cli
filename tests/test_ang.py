@@ -92,8 +92,7 @@ test_data2 = {
 def test_add(names_only_database_file, name, prevalence, expected):
     namer = ang.Namer(names_only_database_file)
     assert namer.add_name(name, prevalence) == expected
-    read = namer._db_handler.read_names()
-    assert len(read.name_list) == 2
+    assert len(namer.get_name_list()) == 2
 
 
 def test_generate_returns_empty_when_names_or_surnames_are_missing(
