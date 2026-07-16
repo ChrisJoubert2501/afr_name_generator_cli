@@ -108,7 +108,7 @@ class DatabaseHandler:
         except OSError:
             # Catch file IO problems
             empty_database = json.loads(empty_database_string)
-            return DBReadResponse(empty_database_string, DB_READ_ERROR)
+            return DBReadResponse(empty_database, DB_READ_ERROR)
 
     def write_database(self, database: ANGDatabase) -> DBCRUDResponse:
 
@@ -171,7 +171,7 @@ class DatabaseHandler:
 
     def write_surnames(
         self, surname_list: List[Dict[str, Any]]
-    ) -> DBNameResponse:
+    ) -> DBCRUDResponse:
         database_read = self.read_database()
         database = database_read.database
 

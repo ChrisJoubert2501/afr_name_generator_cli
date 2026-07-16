@@ -235,7 +235,7 @@ def set_prevalence(
     else:
         typer.secho(
             f"""Success: Set prevalence ({name_entry['prevalence']}) on name # {name_index}"""
-            f""" "{name_entry['first_name']}" """,
+            f""" "{name_entry['name']}" """,
             fg=typer.colors.GREEN,
         )
 
@@ -274,6 +274,8 @@ def remove_name(
     else:
         name_list = namer.get_name_list()
         try:
+            if name_idx < 1:
+                raise IndexError
             name_entry = name_list[name_idx - 1]
         except IndexError:
             typer.secho("Invalid name index", fg=typer.colors.RED)
@@ -322,6 +324,8 @@ def remove_surname(
     else:
         surname_list = namer.get_surname_list()
         try:
+            if surname_idx < 1:
+                raise IndexError
             surname_entry = surname_list[surname_idx - 1]
         except IndexError:
             typer.secho("Invalid surname index", fg=typer.colors.RED)

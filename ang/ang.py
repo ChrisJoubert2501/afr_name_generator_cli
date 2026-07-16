@@ -6,7 +6,7 @@ import random
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple
 
-from ang import DB_READ_ERROR, NAME_IDX_ERROR, SURNAME_IDX_ERROR
+from ang import NAME_IDX_ERROR, SURNAME_IDX_ERROR
 from ang.database.database import DatabaseHandler
 
 
@@ -24,6 +24,12 @@ class Namer:
     def __init__(self, db_path: Path) -> None:
         self._db_handler = DatabaseHandler(db_path)
 
+    @staticmethod
+    def _to_list_index(entry_idx: int) -> int:
+        if entry_idx < 1:
+            raise IndexError
+        return entry_idx - 1
+
     def add_name(self, name_input: List[str], prevalence: int) -> CurrentName:
         """Add a new name to the database."""
 
@@ -34,9 +40,9 @@ class Namer:
             "prevalence": prevalence,
         }
 
-        reponse = self._db_handler.add_name(entry)
+        response = self._db_handler.add_name(entry)
 
-        return CurrentName(entry, reponse.response_code)
+        return CurrentName(entry, response.response_code)
 
     def get_name_list(self) -> List[Dict[str, Any]]:
         """Return the name list."""
@@ -45,7 +51,7 @@ class Namer:
 
     def add_surname(
         self, surname_input: List[str], prevalence: int
-    ) -> CurrentName:
+    ) -> CurrentSurname:
         """Add a new surname to the database."""
 
         surname_text = " ".join(surname_input)
@@ -55,9 +61,9 @@ class Namer:
             "prevalence": prevalence,
         }
 
-        reponse = self._db_handler.add_surname(entry)
+        response = self._db_handler.add_surname(entry)
 
-        return CurrentSurname(entry, reponse.response_code)
+        return CurrentSurname(entry, response.response_code)
 
     def get_surname_list(self) -> List[Dict[str, Any]]:
         """Return the name list."""
@@ -75,7 +81,7 @@ class Namer:
             return CurrentName({}, read.response_code)
 
         try:
-            name_entry = read.name_list[name_idx - 1]
+            name_entry = read.name_list[self._to_list_index(name_idx)]
         except IndexError:
             return CurrentName({}, NAME_IDX_ERROR)
 
@@ -92,7 +98,7 @@ class Namer:
         if read.response_code:
             return CurrentName({}, read.response_code)
         try:
-            name_entry = read.name_list.pop(name_idx - 1)
+            name_entry = read.name_list.pop(self._to_list_index(name_idx))
         except IndexError:
             return CurrentName({}, NAME_IDX_ERROR)
 
@@ -108,7 +114,9 @@ class Namer:
         if read.response_code:
             return CurrentSurname({}, read.response_code)
         try:
-            surname_entry = read.surname_list.pop(surname_idx - 1)
+            surname_entry = read.surname_list.pop(
+                self._to_list_index(surname_idx)
+            )
         except IndexError:
             return CurrentSurname({}, SURNAME_IDX_ERROR)
 
@@ -121,20 +129,24 @@ class Namer:
         write = self._db_handler.write_names([])
         return CurrentName({}, write.response_code)
 
-    def generate_random_name_surname(self, number) -> List[str]:
+    def generate_random_name_surname(self, number: int) -> List[str]:
         """Generates names"""
         names_read = self._db_handler.read_names()
         surnames_read = self._db_handler.read_surnames()
 
-        if (
-            len(names_read.name_list)
-            == 0 | len(surnames_read.surname_list)
-            == 0
-        ):
+        if not names_read.name_list or not surnames_read.surname_list:
             return []
 
-        sampled_names = random.choices(names_read.name_list, k=number)
-        sampled_surnames = random.choices(surnames_read.surname_list, k=number)
+        sampled_names = random.choices(
+            names_read.name_list,
+            weights=[entry["prevalence"] for entry in names_read.name_list],
+            k=number,
+        )
+        sampled_surnames = random.choices(
+            surnames_read.surname_list,
+            weights=[entry["prevalence"] for entry in surnames_read.surname_list],
+            k=number,
+        )
 
         generated_names = []
         for name_entry, surname_entry in zip(sampled_names, sampled_surnames):

@@ -5,7 +5,7 @@ import json
 import pytest
 from typer.testing import CliRunner
 
-from ang import SUCCESS, __app_name__, __version__, ang, cli
+from ang import NAME_IDX_ERROR, SUCCESS, SURNAME_IDX_ERROR, __app_name__, __version__, ang, cli
 
 runner = CliRunner()
 
@@ -60,3 +60,84 @@ def test_add(mock_json_file, name, prevalence, expected):
     assert namer.add_name(name, prevalence) == expected
     read = namer._db_handler.read_names()
     assert len(read.name_list) == 2
+
+
+def test_generate_returns_empty_when_names_or_surnames_are_missing(
+    mock_json_file,
+):
+    namer = ang.Namer(mock_json_file)
+    assert namer.generate_random_name_surname(1) == []
+
+
+def test_generate_uses_prevalence_as_weights(tmp_path, monkeypatch):
+    database = {
+        "names": [
+            {"name": "Pieter", "prevalence": 10},
+            {"name": "Jan", "prevalence": 1},
+        ],
+        "surnames": [
+            {"surname": "Botha", "prevalence": 8},
+            {"surname": "Nel", "prevalence": 2},
+        ],
+    }
+    db_file = tmp_path / "ang.json"
+    with db_file.open("w") as db:
+        json.dump(database, db, indent=4)
+
+    calls = []
+
+    def fake_choices(population, weights, k):
+        calls.append((population, weights, k))
+        return [population[0]] * k
+
+    monkeypatch.setattr(ang.random, "choices", fake_choices)
+
+    namer = ang.Namer(db_file)
+    assert namer.generate_random_name_surname(2) == [
+        "Pieter Botha",
+        "Pieter Botha",
+    ]
+    assert calls == [
+        (database["names"], [10, 1], 2),
+        (database["surnames"], [8, 2], 2),
+    ]
+
+
+def test_set_prevalence_cli_uses_name_key(tmp_path, monkeypatch):
+    database = {
+        "names": [{"name": "Pieter", "prevalence": 10}],
+        "surnames": [],
+    }
+    db_file = tmp_path / "ang.json"
+    with db_file.open("w") as db:
+        json.dump(database, db, indent=4)
+
+    config_file = tmp_path / "config.ini"
+    config_file.write_text(f"[General]\ndatabase = {db_file}\n")
+    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+
+    result = runner.invoke(cli.app, ["set_prevalence", "1", "4"])
+
+    assert result.exit_code == 0
+    assert 'Success: Set prevalence (4) on name # 1 "Pieter"' in result.stdout
+
+
+def test_name_indexes_are_one_based(mock_json_file):
+    namer = ang.Namer(mock_json_file)
+
+    assert namer.set_name_prevalence(0, 4).response == NAME_IDX_ERROR
+    assert namer.remove_name_by_idx(0).response == NAME_IDX_ERROR
+
+
+def test_surname_indexes_are_one_based(tmp_path):
+    database = {
+        "names": [],
+        "surnames": [{"surname": "Botha", "prevalence": 10}],
+    }
+    db_file = tmp_path / "ang.json"
+    with db_file.open("w") as db:
+        json.dump(database, db, indent=4)
+
+    namer = ang.Namer(db_file)
+
+    assert namer.remove_surname_by_idx(0).response == SURNAME_IDX_ERROR
