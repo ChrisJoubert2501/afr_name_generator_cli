@@ -53,7 +53,7 @@ def configured_cli_database(tmp_path, monkeypatch, database_file):
 
 
 @pytest.fixture
-def mock_json_file(database_file):
+def names_only_database_file(database_file):
     return database_file(
         {
             "names": [{"name": "Pieter", "prevalence": 10}],
@@ -89,17 +89,17 @@ test_data2 = {
         ),
     ],
 )
-def test_add(mock_json_file, name, prevalence, expected):
-    namer = ang.Namer(mock_json_file)
+def test_add(names_only_database_file, name, prevalence, expected):
+    namer = ang.Namer(names_only_database_file)
     assert namer.add_name(name, prevalence) == expected
     read = namer._db_handler.read_names()
     assert len(read.name_list) == 2
 
 
 def test_generate_returns_empty_when_names_or_surnames_are_missing(
-    mock_json_file,
+    names_only_database_file,
 ):
-    namer = ang.Namer(mock_json_file)
+    namer = ang.Namer(names_only_database_file)
     assert namer.generate_random_name_surname(1) == []
 
 
@@ -189,8 +189,8 @@ def test_generate_rejects_non_positive_number():
     assert "Invalid value" in result.output
 
 
-def test_name_indexes_are_one_based(mock_json_file):
-    namer = ang.Namer(mock_json_file)
+def test_name_indexes_are_one_based(names_only_database_file):
+    namer = ang.Namer(names_only_database_file)
 
     assert namer.set_name_prevalence(0, 4).response == NAME_IDX_ERROR
     assert namer.remove_name_by_idx(0).response == NAME_IDX_ERROR
