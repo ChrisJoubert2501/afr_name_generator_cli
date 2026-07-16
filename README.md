@@ -24,6 +24,20 @@ python -m pip install -e .[dev]
 
 The editable install (`-e`) keeps the installed `ang` command linked to this checkout, so code changes under `ang/` are picked up without reinstalling.
 
+Enable shell completion for commands and options:
+
+```bash
+ang --install-completion
+```
+
+This installs a small completion hook for your current shell by updating the shell's startup configuration, such as `~/.bashrc` for Bash.
+
+Restart your shell after installing completion. You can inspect the generated completion script without installing it:
+
+```bash
+ang --show-completion
+```
+
 Initialise database:
 
 ```bash
