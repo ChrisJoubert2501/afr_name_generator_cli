@@ -5,7 +5,17 @@ from typing import List, Optional
 
 import typer
 
-from ang import NAME_GENDERS, __app_name__, __version__, ang, config, presenter
+from ang import (
+    GENERATE_GENDERS,
+    NAME_GENDERS,
+    NAME_POOL_ERROR,
+    SURNAME_POOL_ERROR,
+    __app_name__,
+    __version__,
+    ang,
+    config,
+    presenter,
+)
 from ang.database import database
 
 app = typer.Typer(no_args_is_help=True)
@@ -63,6 +73,16 @@ def _normalize_cli_name_gender(gender: str) -> str:
     normalized_gender = str(gender).lower()
     if normalized_gender not in NAME_GENDERS:
         presenter.error("Gender must be one of: " + ", ".join(NAME_GENDERS))
+        raise typer.Exit(1)
+    return normalized_gender
+
+
+def _normalize_cli_generate_gender(gender: str) -> str:
+    normalized_gender = str(gender).lower()
+    if normalized_gender not in GENERATE_GENDERS:
+        presenter.error(
+            "Gender must be one of: " + ", ".join(GENERATE_GENDERS)
+        )
         raise typer.Exit(1)
     return normalized_gender
 
@@ -461,18 +481,47 @@ def generate(
         "-n",
         min=1,
     ),
+    gender: str = typer.Option(
+        "mixed",
+        "--gender",
+        "-g",
+        help="Name gender to generate: man, woman, neutral, or mixed.",
+    ),
 ):
     """Generate random name and surname combinations."""
 
+    normalized_gender = _normalize_cli_generate_gender(gender)
     namer = get_namer()
 
-    generated_names = namer.generate_random_name_surname(number)
+    generation = namer.generate_random_name_surname(number, normalized_gender)
 
-    if len(generated_names) == 0:
+    if generation.response == NAME_POOL_ERROR:
+        if normalized_gender == "mixed":
+            presenter.error(
+                "Mixed generation requires at least one man or neutral name "
+                "and at least one woman or neutral name"
+            )
+        else:
+            presenter.error(
+                "There are no names available for gender "
+                f'"{normalized_gender}"'
+            )
+        raise typer.Exit(1)
+
+    if generation.response == SURNAME_POOL_ERROR:
+        presenter.error("There are no surnames in the database")
+        raise typer.Exit(1)
+
+    if generation.response:
+        presenter.exit_with_error(
+            "Generating names failed with", generation.response
+        )
+
+    if len(generation.generated_names) == 0:
         presenter.error("There are no names/surnames in database")
         raise typer.Exit(1)
 
-    for gen_name in generated_names:
+    for gen_name in generation.generated_names:
         presenter.generated_name(gen_name)
 
     raise typer.Exit()

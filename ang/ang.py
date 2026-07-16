@@ -6,10 +6,13 @@ from typing import Any, Dict, List, NamedTuple
 
 from ang import (
     GENDER_ERROR,
+    GENERATE_GENDERS,
     NAME_GENDERS,
     NAME_IDX_ERROR,
+    NAME_POOL_ERROR,
     SUCCESS,
     SURNAME_IDX_ERROR,
+    SURNAME_POOL_ERROR,
 )
 from ang.database.database import DatabaseHandler
 
@@ -36,6 +39,11 @@ class CurrentSurnameList(NamedTuple):
 
 class DatabaseHeal(NamedTuple):
     changed_entries: int
+    response: int
+
+
+class GeneratedNames(NamedTuple):
+    generated_names: List[str]
     response: int
 
 
@@ -79,6 +87,40 @@ class Namer:
         if normalized_gender not in NAME_GENDERS:
             raise ValueError
         return normalized_gender
+
+    @staticmethod
+    def _normalize_generate_gender(gender: str) -> str:
+        normalized_gender = str(gender).lower()
+        if normalized_gender not in GENERATE_GENDERS:
+            raise ValueError
+        return normalized_gender
+
+    @staticmethod
+    def _get_generation_name_pool(
+        name_list: List[Dict[str, Any]], gender: str
+    ) -> List[Dict[str, Any]]:
+        if gender == "man":
+            compatible_genders = ("man", "neutral")
+        elif gender == "woman":
+            compatible_genders = ("woman", "neutral")
+        else:
+            compatible_genders = ("neutral",)
+
+        return [
+            name_entry
+            for name_entry in name_list
+            if name_entry["gender"] in compatible_genders
+        ]
+
+    @staticmethod
+    def _sample_entries(
+        entries: List[Dict[str, Any]], number: int
+    ) -> List[Dict[str, Any]]:
+        return random.choices(
+            entries,
+            weights=[entry["prevalence"] for entry in entries],
+            k=number,
+        )
 
     def add_name(
         self, name_input: List[str], prevalence: int, gender: str
@@ -403,25 +445,67 @@ class Namer:
         heal = self._db_handler.heal_database()
         return DatabaseHeal(heal.changed_entries, heal.response_code)
 
-    def generate_random_name_surname(self, number: int) -> List[str]:
+    def generate_random_name_surname(
+        self, number: int, gender: str = "mixed"
+    ) -> GeneratedNames:
         """Generates names"""
+        try:
+            normalized_gender = self._normalize_generate_gender(gender)
+        except ValueError:
+            return GeneratedNames([], GENDER_ERROR)
+
         names_read = self._db_handler.read_names()
         surnames_read = self._db_handler.read_surnames()
 
-        if not names_read.name_list or not surnames_read.surname_list:
-            return []
+        if names_read.response_code:
+            return GeneratedNames([], names_read.response_code)
 
-        sampled_names = random.choices(
-            names_read.name_list,
-            weights=[entry["prevalence"] for entry in names_read.name_list],
-            k=number,
+        if surnames_read.response_code:
+            return GeneratedNames([], surnames_read.response_code)
+
+        if not surnames_read.surname_list:
+            return GeneratedNames([], SURNAME_POOL_ERROR)
+
+        if normalized_gender == "mixed":
+            man_name_pool = self._get_generation_name_pool(
+                names_read.name_list, "man"
+            )
+            woman_name_pool = self._get_generation_name_pool(
+                names_read.name_list, "woman"
+            )
+
+            if not man_name_pool or not woman_name_pool:
+                return GeneratedNames([], NAME_POOL_ERROR)
+
+            sampled_surnames = self._sample_entries(
+                surnames_read.surname_list, number
+            )
+
+            generated_names = []
+            for surname_entry in sampled_surnames:
+                selected_gender = random.choice(("man", "woman"))
+                name_pool = (
+                    man_name_pool
+                    if selected_gender == "man"
+                    else woman_name_pool
+                )
+                name_entry = self._sample_entries(name_pool, 1)[0]
+                generated_names.append(
+                    f"{name_entry['name']} {surname_entry['surname']}"
+                )
+
+            return GeneratedNames(generated_names, SUCCESS)
+
+        name_pool = self._get_generation_name_pool(
+            names_read.name_list, normalized_gender
         )
-        sampled_surnames = random.choices(
-            surnames_read.surname_list,
-            weights=[
-                entry["prevalence"] for entry in surnames_read.surname_list
-            ],
-            k=number,
+
+        if not name_pool:
+            return GeneratedNames([], NAME_POOL_ERROR)
+
+        sampled_names = self._sample_entries(name_pool, number)
+        sampled_surnames = self._sample_entries(
+            surnames_read.surname_list, number
         )
 
         generated_names = []
@@ -430,4 +514,4 @@ class Namer:
                 f"{name_entry['name']} {surname_entry['surname']}"
             )
 
-        return generated_names
+        return GeneratedNames(generated_names, SUCCESS)

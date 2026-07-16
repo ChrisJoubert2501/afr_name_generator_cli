@@ -15,7 +15,9 @@ __version__ = "0.1.0"
     SURNAME_IDX_ERROR,
     ALREADY_EXISTS_ERROR,
     GENDER_ERROR,
-) = range(11)
+    NAME_POOL_ERROR,
+    SURNAME_POOL_ERROR,
+) = range(13)
 
 NAME_GENDERS = ("man", "woman", "neutral")
 GENERATE_GENDERS = (*NAME_GENDERS, "mixed")
@@ -31,4 +33,6 @@ ERROR_STRINGS = {
     SURNAME_IDX_ERROR: "surname index error",
     ALREADY_EXISTS_ERROR: "already exists error",
     GENDER_ERROR: "gender error",
+    NAME_POOL_ERROR: "name pool error",
+    SURNAME_POOL_ERROR: "surname pool error",
 }

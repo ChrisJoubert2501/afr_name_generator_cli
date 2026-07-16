@@ -7,8 +7,10 @@ from ang import (
     GENDER_ERROR,
     JSON_ERROR,
     NAME_IDX_ERROR,
+    NAME_POOL_ERROR,
     SUCCESS,
     SURNAME_IDX_ERROR,
+    SURNAME_POOL_ERROR,
     __app_name__,
     __version__,
     ang,
@@ -210,7 +212,10 @@ def test_generate_returns_empty_when_names_or_surnames_are_missing(
     names_only_database_file,
 ):
     namer = ang.Namer(names_only_database_file)
-    assert namer.generate_random_name_surname(1) == []
+    assert namer.generate_random_name_surname(1, "man") == (
+        [],
+        SURNAME_POOL_ERROR,
+    )
 
 
 def test_generate_uses_prevalence_as_weights(database_file, monkeypatch):
@@ -235,14 +240,189 @@ def test_generate_uses_prevalence_as_weights(database_file, monkeypatch):
     monkeypatch.setattr(ang.random, "choices", fake_choices)
 
     namer = ang.Namer(db_file)
-    assert namer.generate_random_name_surname(2) == [
-        "Pieter Botha",
-        "Pieter Botha",
-    ]
+    assert namer.generate_random_name_surname(2, "man") == (
+        [
+            "Pieter Botha",
+            "Pieter Botha",
+        ],
+        SUCCESS,
+    )
     assert calls == [
         (database["names"], [10, 1], 2),
         (database["surnames"], [8, 2], 2),
     ]
+
+
+def test_generate_man_uses_man_and_neutral_name_pool(
+    database_file, monkeypatch
+):
+    database = {
+        "names": [
+            {"name": "Pieter", "prevalence": 10, "gender": "man"},
+            {"name": "Anna", "prevalence": 7, "gender": "woman"},
+            {"name": "Alex", "prevalence": 5, "gender": "neutral"},
+        ],
+        "surnames": [{"surname": "Botha", "prevalence": 8}],
+    }
+    db_file = database_file(database)
+    calls = []
+
+    def fake_choices(population, weights, k):
+        calls.append((population, weights, k))
+        return [population[0]] * k
+
+    monkeypatch.setattr(ang.random, "choices", fake_choices)
+
+    namer = ang.Namer(db_file)
+    generation = namer.generate_random_name_surname(1, "man")
+
+    assert generation == (["Pieter Botha"], SUCCESS)
+    assert calls[0] == (
+        [database["names"][0], database["names"][2]],
+        [10, 5],
+        1,
+    )
+
+
+def test_generate_woman_uses_woman_and_neutral_name_pool(
+    database_file, monkeypatch
+):
+    database = {
+        "names": [
+            {"name": "Pieter", "prevalence": 10, "gender": "man"},
+            {"name": "Anna", "prevalence": 7, "gender": "woman"},
+            {"name": "Alex", "prevalence": 5, "gender": "neutral"},
+        ],
+        "surnames": [{"surname": "Botha", "prevalence": 8}],
+    }
+    db_file = database_file(database)
+    calls = []
+
+    def fake_choices(population, weights, k):
+        calls.append((population, weights, k))
+        return [population[0]] * k
+
+    monkeypatch.setattr(ang.random, "choices", fake_choices)
+
+    namer = ang.Namer(db_file)
+    generation = namer.generate_random_name_surname(1, "woman")
+
+    assert generation == (["Anna Botha"], SUCCESS)
+    assert calls[0] == (
+        [database["names"][1], database["names"][2]],
+        [7, 5],
+        1,
+    )
+
+
+def test_generate_neutral_uses_only_neutral_name_pool(
+    database_file, monkeypatch
+):
+    database = {
+        "names": [
+            {"name": "Pieter", "prevalence": 10, "gender": "man"},
+            {"name": "Anna", "prevalence": 7, "gender": "woman"},
+            {"name": "Alex", "prevalence": 5, "gender": "neutral"},
+        ],
+        "surnames": [{"surname": "Botha", "prevalence": 8}],
+    }
+    db_file = database_file(database)
+    calls = []
+
+    def fake_choices(population, weights, k):
+        calls.append((population, weights, k))
+        return [population[0]] * k
+
+    monkeypatch.setattr(ang.random, "choices", fake_choices)
+
+    namer = ang.Namer(db_file)
+    generation = namer.generate_random_name_surname(1, "neutral")
+
+    assert generation == (["Alex Botha"], SUCCESS)
+    assert calls[0] == ([database["names"][2]], [5], 1)
+
+
+def test_generate_mixed_chooses_man_or_woman_pool_each_time(
+    database_file, monkeypatch
+):
+    database = {
+        "names": [
+            {"name": "Pieter", "prevalence": 10, "gender": "man"},
+            {"name": "Anna", "prevalence": 7, "gender": "woman"},
+            {"name": "Alex", "prevalence": 5, "gender": "neutral"},
+        ],
+        "surnames": [{"surname": "Botha", "prevalence": 8}],
+    }
+    db_file = database_file(database)
+    chosen_genders = iter(["man", "woman"])
+    calls = []
+
+    def fake_choice(population):
+        assert population == ("man", "woman")
+        return next(chosen_genders)
+
+    def fake_choices(population, weights, k):
+        calls.append((population, weights, k))
+        return [population[0]] * k
+
+    monkeypatch.setattr(ang.random, "choice", fake_choice)
+    monkeypatch.setattr(ang.random, "choices", fake_choices)
+
+    namer = ang.Namer(db_file)
+    generation = namer.generate_random_name_surname(2, "mixed")
+
+    assert generation == (["Pieter Botha", "Anna Botha"], SUCCESS)
+    assert calls == [
+        (database["surnames"], [8], 2),
+        ([database["names"][0], database["names"][2]], [10, 5], 1),
+        ([database["names"][1], database["names"][2]], [7, 5], 1),
+    ]
+
+
+def test_generate_mixed_fails_when_one_side_is_empty(database_file):
+    db_file = database_file(
+        {
+            "names": [{"name": "Pieter", "prevalence": 10, "gender": "man"}],
+            "surnames": [{"surname": "Botha", "prevalence": 8}],
+        }
+    )
+
+    namer = ang.Namer(db_file)
+
+    assert namer.generate_random_name_surname(1, "mixed") == (
+        [],
+        NAME_POOL_ERROR,
+    )
+
+
+def test_generate_cli_reports_empty_name_pool(configured_cli_database):
+    configured_cli_database(
+        {
+            "names": [{"name": "Pieter", "prevalence": 10, "gender": "man"}],
+            "surnames": [{"surname": "Botha", "prevalence": 8}],
+        }
+    )
+
+    result = runner.invoke(cli.app, ["generate", "--gender", "woman"])
+
+    assert result.exit_code == 1
+    assert 'There are no names available for gender "woman"' in result.stdout
+
+
+def test_generate_cli_reports_mixed_pool_requirements(
+    configured_cli_database,
+):
+    configured_cli_database(
+        {
+            "names": [{"name": "Pieter", "prevalence": 10, "gender": "man"}],
+            "surnames": [{"surname": "Botha", "prevalence": 8}],
+        }
+    )
+
+    result = runner.invoke(cli.app, ["generate"])
+
+    assert result.exit_code == 1
+    assert "Mixed generation requires" in result.stdout
 
 
 def test_set_name_prevalence_cli_accepts_name_index(
