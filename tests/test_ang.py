@@ -169,7 +169,7 @@ def test_generate_rejects_non_positive_number():
     result = runner.invoke(cli.app, ["generate", "-n", "0"])
 
     assert result.exit_code != 0
-    assert "Invalid value" in result.stdout
+    assert "Invalid value" in result.output
 
 
 def test_name_indexes_are_one_based(mock_json_file):
