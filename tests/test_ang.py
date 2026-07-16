@@ -43,6 +43,7 @@ def test_root_command_shows_help():
     )
     assert "set-name-gender" in result.output
     assert "db-heal" in result.output
+    assert "show-config" in result.output
 
 
 def test_cli_error_message_handles_json_errors():
@@ -55,6 +56,40 @@ def test_cli_handles_invalid_config_file(tmp_path, monkeypatch):
     monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
 
     result = runner.invoke(cli.app, ["list-names"])
+
+    assert result.exit_code == 1
+    assert 'Config file is invalid. Please, run "ang init"' in result.stdout
+
+
+def test_show_config_prints_config_and_database_paths(tmp_path, monkeypatch):
+    config_file = tmp_path / "config.ini"
+    db_file = tmp_path / "ang.json"
+    config_file.write_text(f"[General]\ndatabase = {db_file}\n")
+    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+
+    result = runner.invoke(cli.app, ["show-config"])
+
+    assert result.exit_code == 0
+    assert f"Config file: {config_file}" in result.stdout
+    assert f"Database: {db_file}" in result.stdout
+
+
+def test_show_config_handles_missing_config_file(tmp_path, monkeypatch):
+    config_file = tmp_path / "config.ini"
+    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+
+    result = runner.invoke(cli.app, ["show-config"])
+
+    assert result.exit_code == 1
+    assert 'Config file not found. Please, run "ang init"' in result.stdout
+
+
+def test_show_config_handles_invalid_config_file(tmp_path, monkeypatch):
+    config_file = tmp_path / "config.ini"
+    config_file.write_text("[General]\n")
+    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+
+    result = runner.invoke(cli.app, ["show-config"])
 
     assert result.exit_code == 1
     assert 'Config file is invalid. Please, run "ang init"' in result.stdout

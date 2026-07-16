@@ -50,6 +50,24 @@ def init(
         presenter.success(f"The ang database is stored at\n{db_path}")
 
 
+@app.command(name="show-config")
+def show_config() -> None:
+    """Show the current ang configuration."""
+
+    if not config.CONFIG_FILE_PATH.exists():
+        presenter.error('Config file not found. Please, run "ang init"')
+        raise typer.Exit(1)
+
+    try:
+        db_path = config.get_database_path(config.CONFIG_FILE_PATH)
+    except KeyError:
+        presenter.error('Config file is invalid. Please, run "ang init"')
+        raise typer.Exit(1)
+
+    presenter.plain(f"Config file: {config.CONFIG_FILE_PATH}")
+    presenter.plain(f"Database: {db_path}")
+
+
 def get_namer() -> ang.Namer:
 
     if config.CONFIG_FILE_PATH.exists():
