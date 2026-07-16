@@ -40,6 +40,20 @@ def test_cli_handles_invalid_config_file(tmp_path, monkeypatch):
     assert 'Config file is invalid. Please, run "ang init"' in result.stdout
 
 
+def test_list_names_surfaces_database_read_errors(tmp_path, monkeypatch):
+    db_file = tmp_path / "ang.json"
+    db_file.write_text("{")
+
+    config_file = tmp_path / "config.ini"
+    config_file.write_text(f"[General]\ndatabase = {db_file}\n")
+    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+
+    result = runner.invoke(cli.app, ["list-names"])
+
+    assert result.exit_code == 1
+    assert 'Reading names failed with "database JSON error"' in result.stdout
+
+
 @pytest.fixture
 def database_file(tmp_path):
     def _database_file(database):
@@ -103,7 +117,7 @@ test_data2 = {
 def test_add(names_only_database_file, name, prevalence, expected):
     namer = ang.Namer(names_only_database_file)
     assert namer.add_name(name, prevalence) == expected
-    assert len(namer.get_name_list()) == 2
+    assert len(namer.get_name_list().name_list) == 2
 
 
 def test_generate_returns_empty_when_names_or_surnames_are_missing(

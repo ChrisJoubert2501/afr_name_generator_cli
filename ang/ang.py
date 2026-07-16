@@ -20,6 +20,16 @@ class CurrentSurname(NamedTuple):
     response: int
 
 
+class CurrentNameList(NamedTuple):
+    name_list: List[Dict[str, Any]]
+    response: int
+
+
+class CurrentSurnameList(NamedTuple):
+    surname_list: List[Dict[str, Any]]
+    response: int
+
+
 class Namer:
     def __init__(self, db_path: Path) -> None:
         self._db_handler = DatabaseHandler(db_path)
@@ -66,10 +76,10 @@ class Namer:
 
         return CurrentName(entry, response.response_code)
 
-    def get_name_list(self) -> List[Dict[str, Any]]:
+    def get_name_list(self) -> CurrentNameList:
         """Return the name list."""
         read = self._db_handler.read_names()
-        return read.name_list
+        return CurrentNameList(read.name_list, read.response_code)
 
     def add_surname(
         self, surname_input: List[str], prevalence: int
@@ -87,10 +97,10 @@ class Namer:
 
         return CurrentSurname(entry, response.response_code)
 
-    def get_surname_list(self) -> List[Dict[str, Any]]:
-        """Return the name list."""
+    def get_surname_list(self) -> CurrentSurnameList:
+        """Return the surname list."""
         read = self._db_handler.read_surnames()
-        return read.surname_list
+        return CurrentSurnameList(read.surname_list, read.response_code)
 
     def set_name_prevalence(
         self, name_idx: int, new_prevalence: int

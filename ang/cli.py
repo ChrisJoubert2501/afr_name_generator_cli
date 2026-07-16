@@ -126,9 +126,13 @@ def _list_all_names() -> None:
     """List all first names."""
 
     namer = get_namer()
+    name_response = namer.get_name_list()
+
+    if name_response.response:
+        _exit_with_error("Reading names failed with", name_response.response)
 
     _list_entries(
-        namer.get_name_list(),
+        name_response.name_list,
         "Name list",
         "Name",
         "name",
@@ -140,9 +144,15 @@ def _list_all_surnames() -> None:
     """List all surnames."""
 
     namer = get_namer()
+    surname_response = namer.get_surname_list()
+
+    if surname_response.response:
+        _exit_with_error(
+            "Reading surnames failed with", surname_response.response
+        )
 
     _list_entries(
-        namer.get_surname_list(),
+        surname_response.surname_list,
         "Surname list",
         "Surname",
         "surname",
