@@ -5,4 +5,4 @@
 - [ ] Clean up response handling
 - [ ] Using "single add" function everywhere for names and surnames
 - [ ] Use prevalence as probabilities during generation
-- [ ] Add masculine/feminine/neutral names
+- [x] Add masculine/feminine/neutral names

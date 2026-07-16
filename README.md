@@ -44,10 +44,10 @@ Initialise database:
 python -m ang init
 ```
 
-Generate (10) man names:
+Generate (10) mixed names:
 
 ```bash
-python -m ang generate -n 10 --gender man
+python -m ang generate -n 10
 ```
 
 `generate` defaults to `--gender mixed`, which randomly alternates between man and woman name pools. Neutral names are included when generating man or woman names.
