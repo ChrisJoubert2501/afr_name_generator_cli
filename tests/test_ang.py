@@ -146,6 +146,13 @@ def test_list_commands_show_names_and_surnames(tmp_path, monkeypatch):
     assert "Botha" in surnames_result.stdout
 
 
+def test_generate_rejects_non_positive_number():
+    result = runner.invoke(cli.app, ["generate", "-n", "0"])
+
+    assert result.exit_code != 0
+    assert "Invalid value" in result.stdout
+
+
 def test_name_indexes_are_one_based(mock_json_file):
     namer = ang.Namer(mock_json_file)
 

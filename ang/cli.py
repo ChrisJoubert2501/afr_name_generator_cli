@@ -348,6 +348,7 @@ def generate(
         1,
         "--number",
         "-n",
+        min=1,
     )
 ):
 
