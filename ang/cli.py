@@ -135,16 +135,22 @@ def add_surname(
 
 @app.command()
 def list_names() -> None:
+    """List all stored names."""
+
     _list_all_names()
 
 
 @app.command()
 def list_surnames() -> None:
+    """List all stored surnames."""
+
     _list_all_surnames()
 
 
 @app.command()
 def list_all() -> None:
+    """List all stored names and surnames."""
+
     _list_all_names()
     _list_all_surnames()
 
@@ -154,7 +160,7 @@ def set_prevalence(
     name_index: int = typer.Argument(...),
     new_prevalence: int = typer.Argument(..., min=1, max=10),
 ) -> None:
-    """Set a name's prevalence using its Index."""
+    """Set a name's prevalence using its index."""
 
     namer = get_namer()
 
@@ -294,6 +300,7 @@ def generate(
         min=1,
     ),
 ):
+    """Generate random name and surname combinations."""
 
     namer = get_namer()
 
