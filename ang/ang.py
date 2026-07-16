@@ -124,9 +124,9 @@ class Namer:
 
         return CurrentSurname(surname_entry, write.response_code)
 
-    def remove_all_names(self) -> CurrentName:
-        """Remove all names from the database."""
-        write = self._db_handler.write_names([])
+    def remove_all(self) -> CurrentName:
+        """Remove all first names and surnames from the database."""
+        write = self._db_handler.write_database({"names": [], "surnames": []})
         return CurrentName({}, write.response_code)
 
     def generate_random_name_surname(self, number: int) -> List[str]:

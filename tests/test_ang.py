@@ -192,6 +192,26 @@ def test_remove_surname_cli_uses_surname_wording(configured_cli_database):
     assert "Surname # 1: 'Botha' was removed" in result.stdout
 
 
+def test_clear_removes_names_and_surnames(
+    configured_cli_database,
+):
+    db_file = configured_cli_database(
+        {
+            "names": [{"name": "Pieter", "prevalence": 10}],
+            "surnames": [{"surname": "Botha", "prevalence": 8}],
+        }
+    )
+
+    result = runner.invoke(cli.app, ["clear", "--force"])
+
+    assert result.exit_code == 0
+    assert "All names and surnames were removed" in result.stdout
+    with db_file.open("r") as db:
+        database = json.load(db)
+    assert database["names"] == []
+    assert database["surnames"] == []
+
+
 def test_generate_rejects_non_positive_number():
     result = runner.invoke(cli.app, ["generate", "-n", "0"])
 

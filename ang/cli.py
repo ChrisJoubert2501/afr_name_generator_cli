@@ -329,21 +329,23 @@ def remove_surname(
 def remove_all(
     force: bool = typer.Option(
         ...,
-        prompt="Delete all names?",
+        prompt="Delete all names and surnames?",
         help="Force deletion without confirmation.",
     ),
 ) -> None:
-    """Remove all names."""
+    """Remove all names and surnames."""
 
     namer = get_namer()
 
     if force:
-        response = namer.remove_all_names().response
+        response = namer.remove_all().response
 
         if response:
-            _exit_with_error("Removing names failed with", response)
+            _exit_with_error("Removing names and surnames failed with", response)
         else:
-            typer.secho("All names were removed", fg=typer.colors.GREEN)
+            typer.secho(
+                "All names and surnames were removed", fg=typer.colors.GREEN
+            )
 
     else:
         typer.echo("Operation canceled")
