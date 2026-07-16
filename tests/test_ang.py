@@ -5,7 +5,7 @@ import json
 import pytest
 from typer.testing import CliRunner
 
-from ang import NAME_IDX_ERROR, SUCCESS, SURNAME_IDX_ERROR, __app_name__, __version__, ang, cli
+from ang import JSON_ERROR, NAME_IDX_ERROR, SUCCESS, SURNAME_IDX_ERROR, __app_name__, __version__, ang, cli
 
 runner = CliRunner()
 
@@ -14,6 +14,10 @@ def test_version():
     result = runner.invoke(cli.app, ["--version"])
     assert result.exit_code == 0
     assert f"{__app_name__} v{__version__}\n" in result.stdout
+
+
+def test_cli_error_message_handles_json_errors():
+    assert cli._get_error_message(JSON_ERROR) == "database JSON error"
 
 
 @pytest.fixture

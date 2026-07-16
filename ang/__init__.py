@@ -23,6 +23,7 @@ ERROR_STRINGS = {
     FILE_ERROR: "config file error",
     DB_READ_ERROR: "database read error",
     DB_WRITE_ERROR: "database write error",
+    JSON_ERROR: "database JSON error",
     SCHEMA_ERROR: "schema validation error",
     NAME_IDX_ERROR: "name index error",
     SURNAME_IDX_ERROR: "surname index error",
