@@ -280,7 +280,7 @@ def remove_surname(
         help="Force deletion without confirmation.",
     ),
 ) -> None:
-    """Remove a name using its index."""
+    """Remove a surname using its index."""
     namer = get_namer()
 
     def _remove():
@@ -293,7 +293,7 @@ def remove_surname(
 
         else:
             typer.secho(
-                f"""Name # {surname_idx}: '{surname_entry["surname"]}' was removed""",
+                f"""Surname # {surname_idx}: '{surname_entry["surname"]}' was removed""",
                 fg=typer.colors.GREEN,
             )
 

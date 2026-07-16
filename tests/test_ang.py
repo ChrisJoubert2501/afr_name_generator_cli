@@ -146,6 +146,25 @@ def test_list_commands_show_names_and_surnames(tmp_path, monkeypatch):
     assert "Botha" in surnames_result.stdout
 
 
+def test_remove_surname_cli_uses_surname_wording(tmp_path, monkeypatch):
+    database = {
+        "names": [],
+        "surnames": [{"surname": "Botha", "prevalence": 8}],
+    }
+    db_file = tmp_path / "ang.json"
+    with db_file.open("w") as db:
+        json.dump(database, db, indent=4)
+
+    config_file = tmp_path / "config.ini"
+    config_file.write_text(f"[General]\ndatabase = {db_file}\n")
+    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+
+    result = runner.invoke(cli.app, ["remove-surname", "1", "--force"])
+
+    assert result.exit_code == 0
+    assert "Surname # 1: 'Botha' was removed" in result.stdout
+
+
 def test_generate_rejects_non_positive_number():
     result = runner.invoke(cli.app, ["generate", "-n", "0"])
 
