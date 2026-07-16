@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This module provides the ANG config functionality."""
 
 import configparser

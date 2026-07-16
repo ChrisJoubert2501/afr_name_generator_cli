@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Presentation helpers for the ANG CLI."""
 
 from typing import Any, Dict, List
@@ -73,7 +72,6 @@ def list_entries(
     typer.secho("-" * len(headers), fg=typer.colors.BLUE)
 
     for index, entry in enumerate(entries, 1):
-
         value = entry[value_key]
         prevalence = entry["prevalence"]
 

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """This module provides the ANG CLI."""
 
 from pathlib import Path
@@ -112,8 +111,8 @@ def add_name(
         presenter.exit_with_error("Adding name failed with", response)
     else:
         presenter.success(
-            f"""First name: "{name_entry['name']}" was added """
-            f"""with prevalence: {name_entry['prevalence']}"""
+            f"""First name: "{name_entry["name"]}" was added """
+            f"""with prevalence: {name_entry["prevalence"]}"""
         )
 
 
@@ -129,8 +128,8 @@ def add_surname(
         presenter.exit_with_error("Adding surname failed with", response)
     else:
         presenter.success(
-            f"""Surname: "{surname_entry['surname']}" was added """
-            f"""with prevalence: {surname_entry['prevalence']}"""
+            f"""Surname: "{surname_entry["surname"]}" was added """
+            f"""with prevalence: {surname_entry["prevalence"]}"""
         )
 
 
@@ -171,8 +170,8 @@ def set_prevalence(
 
     else:
         presenter.success(
-            f"""Success: Set prevalence ({name_entry['prevalence']}) on name # {name_index}"""
-            f""" "{name_entry['name']}" """
+            f"Success: Set prevalence ({name_entry['prevalence']}) "
+            f'on name # {name_index} "{name_entry["name"]}" '
         )
 
 
@@ -192,7 +191,6 @@ def remove_name(
     def _remove():
         name_entry, response = namer.remove_name(name_identifier)
         if response:
-
             presenter.exit_with_error(
                 f"Removing name {name_identifier} failed with", response
             )
@@ -234,7 +232,6 @@ def remove_surname(
     def _remove():
         surname_entry, response = namer.remove_surname(surname_identifier)
         if response:
-
             presenter.exit_with_error(
                 f"Removing surname {surname_identifier} failed with", response
             )
@@ -295,7 +292,7 @@ def generate(
         "--number",
         "-n",
         min=1,
-    )
+    ),
 ):
 
     namer = get_namer()
@@ -327,6 +324,6 @@ def main(
         help="Show the application's version and exit.",
         callback=_version_callback,
         is_eager=True,
-    )
+    ),
 ) -> None:
     return

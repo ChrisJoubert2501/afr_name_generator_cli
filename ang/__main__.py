@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """ANG entry point script."""
 
 from ang import __app_name__, cli

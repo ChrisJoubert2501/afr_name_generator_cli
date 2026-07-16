@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """This module provides the ANG database functionality."""
 
 import json
@@ -79,7 +77,6 @@ class DBCRUDResponse(NamedTuple):
 
 
 class DatabaseHandler:
-
     def __init__(self, db_path: Path) -> None:
         self._db_path = db_path
 

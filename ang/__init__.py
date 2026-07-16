@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """Top-level package for ANG (Afrikaans Name Generator)."""
 
 __app_name__ = "ang"

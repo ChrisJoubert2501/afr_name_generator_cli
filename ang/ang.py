@@ -1,5 +1,3 @@
-# -*- coding: utf-8 -*-
-
 """This module provides the ANG model-controller."""
 
 import random
@@ -293,14 +291,16 @@ class Namer:
         )
         sampled_surnames = random.choices(
             surnames_read.surname_list,
-            weights=[entry["prevalence"] for entry in surnames_read.surname_list],
+            weights=[
+                entry["prevalence"] for entry in surnames_read.surname_list
+            ],
             k=number,
         )
 
         generated_names = []
         for name_entry, surname_entry in zip(sampled_names, sampled_surnames):
             generated_names.append(
-                f'{name_entry["name"]} {surname_entry["surname"]}'
+                f"{name_entry['name']} {surname_entry['surname']}"
             )
 
         return generated_names
