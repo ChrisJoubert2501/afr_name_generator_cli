@@ -4,7 +4,13 @@ import random
 from pathlib import Path
 from typing import Any, Dict, List, NamedTuple
 
-from ang import NAME_IDX_ERROR, SUCCESS, SURNAME_IDX_ERROR
+from ang import (
+    GENDER_ERROR,
+    NAME_GENDERS,
+    NAME_IDX_ERROR,
+    SUCCESS,
+    SURNAME_IDX_ERROR,
+)
 from ang.database.database import DatabaseHandler
 
 
@@ -25,6 +31,11 @@ class CurrentNameList(NamedTuple):
 
 class CurrentSurnameList(NamedTuple):
     surname_list: List[Dict[str, Any]]
+    response: int
+
+
+class DatabaseHeal(NamedTuple):
+    changed_entries: int
     response: int
 
 
@@ -62,8 +73,22 @@ class Namer:
 
         raise IndexError
 
-    def add_name(self, name_input: List[str], prevalence: int) -> CurrentName:
+    @staticmethod
+    def _normalize_name_gender(gender: str) -> str:
+        normalized_gender = str(gender).lower()
+        if normalized_gender not in NAME_GENDERS:
+            raise ValueError
+        return normalized_gender
+
+    def add_name(
+        self, name_input: List[str], prevalence: int, gender: str
+    ) -> CurrentName:
         """Add a new name to the database."""
+
+        try:
+            normalized_gender = self._normalize_name_gender(gender)
+        except ValueError:
+            return CurrentName({}, GENDER_ERROR)
 
         return self._add_entry_response(
             name_input,
@@ -71,6 +96,7 @@ class Namer:
             "name",
             self._db_handler.add_name,
             CurrentName,
+            {"gender": normalized_gender},
         )
 
     def _add_entry_response(
@@ -80,19 +106,40 @@ class Namer:
         entry_key: str,
         add_entry,
         response_type,
+        extra_fields=None,
     ):
         entry = {
             entry_key: " ".join(entry_input),
             "prevalence": prevalence,
         }
 
+        if extra_fields:
+            entry.update(extra_fields)
+
         response = add_entry(entry)
 
         return response_type(entry, response.response_code)
 
-    def get_name_list(self) -> CurrentNameList:
+    def get_name_list(self, gender: str = None) -> CurrentNameList:
         """Return the name list."""
+        if gender is not None:
+            try:
+                gender = self._normalize_name_gender(gender)
+            except ValueError:
+                return CurrentNameList([], GENDER_ERROR)
+
         read = self._db_handler.read_names()
+
+        if gender is not None:
+            return CurrentNameList(
+                [
+                    name_entry
+                    for name_entry in read.name_list
+                    if name_entry["gender"] == gender
+                ],
+                read.response_code,
+            )
+
         return CurrentNameList(read.name_list, read.response_code)
 
     def add_surname(
@@ -174,6 +221,37 @@ class Namer:
             SURNAME_IDX_ERROR,
             CurrentSurname,
         )
+
+    def set_name_gender(
+        self, name_identifier: str, new_gender: str
+    ) -> CurrentName:
+        """Set a gender on a name using its index or value."""
+
+        try:
+            normalized_gender = self._normalize_name_gender(new_gender)
+        except ValueError:
+            return CurrentName({}, GENDER_ERROR)
+
+        read = self._db_handler.read_names()
+
+        if read.response_code:
+            return CurrentName({}, read.response_code)
+
+        name_entry, response = self._get_entry_response(
+            read.name_list,
+            "name",
+            name_identifier,
+            NAME_IDX_ERROR,
+            CurrentName,
+        )
+
+        if response:
+            return CurrentName({}, response)
+
+        name_entry["gender"] = normalized_gender
+        write = self._db_handler.write_names(read.name_list)
+
+        return CurrentName(name_entry, write.response_code)
 
     def remove_name_by_idx(self, name_idx: int) -> CurrentName:
         """Remove a name from the database using its index."""
@@ -319,6 +397,11 @@ class Namer:
         """Remove all first names and surnames from the database."""
         write = self._db_handler.write_database({"names": [], "surnames": []})
         return CurrentName({}, write.response_code)
+
+    def heal_database(self) -> DatabaseHeal:
+        """Write inferred missing database values."""
+        heal = self._db_handler.heal_database()
+        return DatabaseHeal(heal.changed_entries, heal.response_code)
 
     def generate_random_name_surname(self, number: int) -> List[str]:
         """Generates names"""

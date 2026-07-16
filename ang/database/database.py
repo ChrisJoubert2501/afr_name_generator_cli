@@ -2,7 +2,7 @@
 
 import json
 from pathlib import Path
-from typing import Any, Dict, List, NamedTuple, TypedDict
+from typing import Any, Dict, List, NamedTuple, Tuple, TypedDict
 
 from schema import SchemaError
 
@@ -45,6 +45,7 @@ def init_database(db_path: Path) -> int:
 class NameEntry(TypedDict):
     name: str
     prevalence: int
+    gender: str
 
 
 class SurnameEntry(TypedDict):
@@ -76,9 +77,32 @@ class DBCRUDResponse(NamedTuple):
     response_code: int
 
 
+class DBHealResponse(NamedTuple):
+    changed_entries: int
+    response_code: int
+
+
 class DatabaseHandler:
     def __init__(self, db_path: Path) -> None:
         self._db_path = db_path
+
+    @staticmethod
+    def _with_missing_name_genders(
+        database: Dict[str, Any],
+    ) -> Tuple[Dict[str, Any], int]:
+        changed_entries = 0
+
+        if not isinstance(database, dict):
+            return database, changed_entries
+
+        names = database.get("names", [])
+        if isinstance(names, list):
+            for name_entry in names:
+                if isinstance(name_entry, dict) and "gender" not in name_entry:
+                    name_entry["gender"] = "man"
+                    changed_entries += 1
+
+        return database, changed_entries
 
     def read_database(self) -> DBReadResponse:
 
@@ -86,6 +110,7 @@ class DatabaseHandler:
             with self._db_path.open("r") as db:
                 try:
                     database = json.load(db)
+                    database, _ = self._with_missing_name_genders(database)
                     validated_database = ang_database_schema.validate(database)
                     return DBReadResponse(validated_database, SUCCESS)
                 except json.JSONDecodeError:
@@ -112,6 +137,27 @@ class DatabaseHandler:
         except OSError:
             # Catch file IO problems
             return DBCRUDResponse(DB_WRITE_ERROR)
+
+    def heal_database(self) -> DBHealResponse:
+        try:
+            with self._db_path.open("r") as db:
+                try:
+                    database = json.load(db)
+                except json.JSONDecodeError:
+                    return DBHealResponse(0, JSON_ERROR)
+        except OSError:
+            return DBHealResponse(0, DB_READ_ERROR)
+
+        database, changed_entries = self._with_missing_name_genders(database)
+
+        try:
+            validated_database = ang_database_schema.validate(database)
+        except SchemaError:
+            return DBHealResponse(0, SCHEMA_ERROR)
+
+        database_write = self.write_database(validated_database)
+
+        return DBHealResponse(changed_entries, database_write.response_code)
 
     def read_names(self) -> DBNameResponse:
         database_read = self.read_database()

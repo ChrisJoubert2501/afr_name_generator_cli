@@ -14,7 +14,11 @@ __version__ = "0.1.0"
     NAME_IDX_ERROR,
     SURNAME_IDX_ERROR,
     ALREADY_EXISTS_ERROR,
-) = range(10)
+    GENDER_ERROR,
+) = range(11)
+
+NAME_GENDERS = ("man", "woman", "neutral")
+GENERATE_GENDERS = (*NAME_GENDERS, "mixed")
 
 ERROR_STRINGS = {
     DIR_ERROR: "config directory error",
@@ -26,4 +30,5 @@ ERROR_STRINGS = {
     NAME_IDX_ERROR: "name index error",
     SURNAME_IDX_ERROR: "surname index error",
     ALREADY_EXISTS_ERROR: "already exists error",
+    GENDER_ERROR: "gender error",
 }

@@ -5,7 +5,7 @@ from typing import List, Optional
 
 import typer
 
-from ang import __app_name__, __version__, ang, config, presenter
+from ang import NAME_GENDERS, __app_name__, __version__, ang, config, presenter
 from ang.database import database
 
 app = typer.Typer(no_args_is_help=True)
@@ -59,10 +59,23 @@ def get_namer() -> ang.Namer:
         raise typer.Exit(1)
 
 
-def _list_all_names() -> None:
+def _normalize_cli_name_gender(gender: str) -> str:
+    normalized_gender = str(gender).lower()
+    if normalized_gender not in NAME_GENDERS:
+        presenter.error("Gender must be one of: " + ", ".join(NAME_GENDERS))
+        raise typer.Exit(1)
+    return normalized_gender
+
+
+def _list_all_names(gender: Optional[str] = None) -> None:
     """List all first names."""
 
     namer = get_namer()
+    normalized_gender = None
+
+    if gender is not None:
+        normalized_gender = _normalize_cli_name_gender(gender)
+
     name_response = namer.get_name_list()
 
     if name_response.response:
@@ -70,13 +83,49 @@ def _list_all_names() -> None:
             "Reading names failed with", name_response.response
         )
 
-    presenter.list_entries(
-        name_response.name_list,
-        "Name list",
-        "Name",
-        "name",
-        "There are no names in the name database yet",
-    )
+    if normalized_gender is not None:
+        filtered_name_list = [
+            name_entry
+            for name_entry in name_response.name_list
+            if name_entry["gender"] == normalized_gender
+        ]
+
+        presenter.list_entries(
+            filtered_name_list,
+            f"{normalized_gender.title()} name list",
+            "Name",
+            "name",
+            f"There are no {normalized_gender} names in the name database yet",
+            [("Gender", "gender", 8)],
+        )
+        return
+
+    if len(name_response.name_list) == 0:
+        presenter.list_entries(
+            name_response.name_list,
+            "Name list",
+            "Name",
+            "name",
+            "There are no names in the name database yet",
+            [("Gender", "gender", 8)],
+        )
+        return
+
+    for name_gender in NAME_GENDERS:
+        gender_name_list = [
+            name_entry
+            for name_entry in name_response.name_list
+            if name_entry["gender"] == name_gender
+        ]
+        presenter.list_entries(
+            gender_name_list,
+            f"{name_gender.title()} name list",
+            "Name",
+            "name",
+            f"There are no {name_gender} names in the name database yet",
+            [("Gender", "gender", 8)],
+            exit_on_empty=False,
+        )
 
 
 def _list_all_surnames() -> None:
@@ -103,16 +152,30 @@ def _list_all_surnames() -> None:
 def add_name(
     name_input: List[str] = typer.Argument(...),
     prevalence: int = typer.Option(10, "--prevalence", "-p", min=1, max=10),
+    gender: Optional[str] = typer.Option(
+        None,
+        "--gender",
+        "-g",
+        help="Name gender: man, woman, or neutral.",
+    ),
 ) -> None:
     """Add a new name with a prevalence (between 1-10, optional)."""
+    if gender is None:
+        gender = typer.prompt("Gender")
+
+    normalized_gender = _normalize_cli_name_gender(gender)
+
     namer = get_namer()
-    name_entry, response = namer.add_name(name_input, prevalence)
+    name_entry, response = namer.add_name(
+        name_input, prevalence, normalized_gender
+    )
     if response:
         presenter.exit_with_error("Adding name failed with", response)
     else:
         presenter.success(
             f"""First name: "{name_entry["name"]}" was added """
-            f"""with prevalence: {name_entry["prevalence"]}"""
+            f"""with prevalence: {name_entry["prevalence"]} """
+            f"""and gender: {name_entry["gender"]}"""
         )
 
 
@@ -134,10 +197,17 @@ def add_surname(
 
 
 @app.command()
-def list_names() -> None:
+def list_names(
+    gender: Optional[str] = typer.Option(
+        None,
+        "--gender",
+        "-g",
+        help="Only list names with this exact gender.",
+    ),
+) -> None:
     """List all stored names."""
 
-    _list_all_names()
+    _list_all_names(gender)
 
 
 @app.command()
@@ -148,10 +218,17 @@ def list_surnames() -> None:
 
 
 @app.command()
-def list_all() -> None:
+def list_all(
+    gender: Optional[str] = typer.Option(
+        None,
+        "--gender",
+        "-g",
+        help="Only list names with this exact gender.",
+    ),
+) -> None:
     """List all stored names and surnames."""
 
-    _list_all_names()
+    _list_all_names(gender)
     _list_all_surnames()
 
 
@@ -205,6 +282,33 @@ def set_surname_prevalence(
         presenter.success(
             f"Success: Set prevalence ({surname_entry['prevalence']}) "
             f'on surname "{surname_entry["surname"]}"'
+        )
+
+
+@app.command(name="set-name-gender")
+def set_name_gender(
+    name_identifier: str = typer.Argument(...),
+    new_gender: str = typer.Argument(...),
+) -> None:
+    """Set a name's gender using its index or value."""
+
+    normalized_gender = _normalize_cli_name_gender(new_gender)
+    namer = get_namer()
+
+    name_entry, response = namer.set_name_gender(
+        name_identifier, normalized_gender
+    )
+
+    if response:
+        presenter.exit_with_error(
+            f'Setting gender on name "{name_identifier}" failed with',
+            response,
+        )
+
+    else:
+        presenter.success(
+            f"Success: Set gender ({name_entry['gender']}) "
+            f'on name "{name_entry["name"]}"'
         )
 
 
@@ -316,6 +420,37 @@ def remove_all(
 
     else:
         presenter.canceled()
+
+
+@app.command(name="db-heal")
+def db_heal(
+    force: bool = typer.Option(
+        False,
+        "--force",
+        "-f",
+        help="Write missing default database values without confirmation.",
+    ),
+) -> None:
+    """Write missing default values to the database."""
+
+    if not force:
+        heal = presenter.confirm("Write missing default values to database?")
+        if not heal:
+            presenter.canceled()
+            return
+
+    namer = get_namer()
+    heal_response = namer.heal_database()
+
+    if heal_response.response:
+        presenter.exit_with_error(
+            "Healing database failed with", heal_response.response
+        )
+
+    presenter.success(
+        "Database healed; "
+        f"{heal_response.changed_entries} missing name gender value(s) added"
+    )
 
 
 @app.command(name="generate")

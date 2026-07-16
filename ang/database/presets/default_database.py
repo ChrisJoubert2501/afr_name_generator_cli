@@ -3,507 +3,633 @@ default_database_string = """
     "names": [
         {
             "name": "Adriaan",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Altus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Alwyn",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Andre",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Andries",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Anthonie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Anton",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Arno",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Ben",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Benjamin",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Bernard",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Bertus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Brewis",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Charl",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Chris",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Christiaan",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Christo",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Christoff",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Coenie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Coenraad",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Cornelis",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Daan",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Danie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Dani\u00ebl",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Dawid",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Dawie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Deon",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Dewald",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Dian",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Dirk",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Duhann",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Eben",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Estian",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Etienne",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Ewald",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Fanie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Fanus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Ferdi",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Francois",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Frikkie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Gerhard",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Gerrit",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Gert",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Gideon",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Gysbert",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Hansie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Heinrich",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Hendrik",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Hennie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Henrico",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Jaco",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Jacobus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Jacques",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Jak",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Jakobus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Jan",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Janco",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Jannie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Japie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Johann",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Josef",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Joshua",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Jurie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Kallie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Kobus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Koos",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Kornelis",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Leon",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Louis",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Luan",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Luca",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Maghiel",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Marcel",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Marius",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Marnus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Mattys",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Mauritz",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Michael",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Migael",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Morn\u00e9",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Naas",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Nelius",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Nico",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Nicolaas",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Niel",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Ockert",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Ockie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Peet",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Peter",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Petrus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Philip",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Pieter",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Pik",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Renier",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Retief",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Reynard",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Riaan",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Richardt",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Ricus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Rikus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Ruag",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Ruan",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Ruben",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Sakkie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Sarel",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Schalk",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Sebastian",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Sias",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Stefan",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Steyn",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Stiaan",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Theo",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Theuns",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Thys",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Tiaan",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Tielman",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Tinus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Werner",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Wian",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Wikus",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Willem",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Willie",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Winand",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Wouter",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Wynand",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         },
         {
             "name": "Zander",
-            "prevalence": 10
+            "prevalence": 10,
+            "gender": "man"
         }
     ],
     "surnames": [

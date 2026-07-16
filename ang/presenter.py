@@ -1,6 +1,6 @@
 """Presentation helpers for the ANG CLI."""
 
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import typer
 
@@ -49,36 +49,46 @@ def list_entries(
     value_label: str,
     value_key: str,
     empty_message: str,
+    extra_columns: List[Tuple[str, str, int]] = None,
+    exit_on_empty: bool = True,
 ) -> None:
     if len(entries) == 0:
         typer.secho(
             empty_message,
             fg=typer.colors.MAGENTA,
         )
-        raise typer.Exit()
+        if exit_on_empty:
+            raise typer.Exit()
+        return
 
     typer.secho(f"\n{title}:\n", fg=typer.colors.BLUE, bold=True)
 
-    columns = (
-        "Index.  ",
-        f"| {value_label:<22}",
-        "| Prevalence  ",
-    )
+    table_columns = [
+        ("Index.", "_index", 6),
+        (value_label, value_key, 22),
+        *(extra_columns or []),
+        ("Prevalence", "prevalence", 10),
+    ]
 
-    headers = "".join(columns)
+    headers = " | ".join(
+        f"{label:<{width}}" for label, _, width in table_columns
+    )
 
     typer.secho(headers, fg=typer.colors.BLUE, bold=True)
 
     typer.secho("-" * len(headers), fg=typer.colors.BLUE)
 
     for index, entry in enumerate(entries, 1):
-        value = entry[value_key]
-        prevalence = entry["prevalence"]
+        row_values = []
+        for _, entry_key, width in table_columns:
+            if entry_key == "_index":
+                value = str(index)
+            else:
+                value = str(entry[entry_key])
+            row_values.append(f"{value:<{width}}")
 
         typer.secho(
-            f"{index}{(len(columns[0]) - len(str(index))) * ' '}"
-            f"| {value}{(len(columns[1]) - len(value) - 2) * ' '}"
-            f"| {prevalence}",
+            " | ".join(row_values),
             fg=typer.colors.BLUE,
         )
 
