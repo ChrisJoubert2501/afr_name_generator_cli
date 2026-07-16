@@ -312,7 +312,7 @@ def test_remove_name_cancel_does_not_delete(configured_cli_database):
     assert database["names"] == [{"name": "Pieter", "prevalence": 10}]
 
 
-def test_clear_removes_names_and_surnames(
+def test_remove_all_removes_names_and_surnames(
     configured_cli_database,
 ):
     db_file = configured_cli_database(
@@ -322,7 +322,7 @@ def test_clear_removes_names_and_surnames(
         }
     )
 
-    result = runner.invoke(cli.app, ["clear", "--force"])
+    result = runner.invoke(cli.app, ["remove-all", "--force"])
 
     assert result.exit_code == 0
     assert "All names and surnames were removed" in result.stdout

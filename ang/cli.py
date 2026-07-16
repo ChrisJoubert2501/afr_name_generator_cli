@@ -292,7 +292,7 @@ def remove_surname(
             presenter.canceled()
 
 
-@app.command(name="clear")
+@app.command(name="remove-all")
 def remove_all(
     force: bool = typer.Option(
         ...,
