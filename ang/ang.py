@@ -30,6 +30,28 @@ class Namer:
             raise IndexError
         return entry_idx - 1
 
+    @staticmethod
+    def _is_index_identifier(identifier: str) -> bool:
+        return identifier.isdecimal()
+
+    @classmethod
+    def _get_entry_by_identifier(
+        cls,
+        entries: List[Dict[str, Any]],
+        entry_key: str,
+        identifier: str,
+    ) -> Dict[str, Any]:
+        if cls._is_index_identifier(identifier):
+            return entries[cls._to_list_index(int(identifier))]
+
+        normalized_identifier = identifier.title()
+
+        for entry in entries:
+            if entry[entry_key] == normalized_identifier:
+                return entry
+
+        raise IndexError
+
     def add_name(self, name_input: List[str], prevalence: int) -> CurrentName:
         """Add a new name to the database."""
 
@@ -106,6 +128,40 @@ class Namer:
 
         return CurrentName(name_entry, write.response_code)
 
+    def remove_name(self, name_identifier: str) -> CurrentName:
+        """Remove a name from the database using its index or value."""
+        read = self._db_handler.read_names()
+
+        if read.response_code:
+            return CurrentName({}, read.response_code)
+
+        try:
+            name_entry = self.get_name(name_identifier).name
+            read.name_list.remove(name_entry)
+        except (IndexError, ValueError):
+            return CurrentName({}, NAME_IDX_ERROR)
+
+        write = self._db_handler.write_names(read.name_list)
+
+        return CurrentName(name_entry, write.response_code)
+
+    def get_name(self, name_identifier: str) -> CurrentName:
+        """Return a name using its index or value."""
+
+        read = self._db_handler.read_names()
+
+        if read.response_code:
+            return CurrentName({}, read.response_code)
+
+        try:
+            name_entry = self._get_entry_by_identifier(
+                read.name_list, "name", name_identifier
+            )
+        except IndexError:
+            return CurrentName({}, NAME_IDX_ERROR)
+
+        return CurrentName(name_entry, read.response_code)
+
     def remove_surname_by_idx(self, surname_idx: int) -> CurrentSurname:
         """Remove a surname from the database using its index."""
 
@@ -123,6 +179,40 @@ class Namer:
         write = self._db_handler.write_surnames(read.surname_list)
 
         return CurrentSurname(surname_entry, write.response_code)
+
+    def remove_surname(self, surname_identifier: str) -> CurrentSurname:
+        """Remove a surname from the database using its index or value."""
+        read = self._db_handler.read_surnames()
+
+        if read.response_code:
+            return CurrentSurname({}, read.response_code)
+
+        try:
+            surname_entry = self.get_surname(surname_identifier).surname
+            read.surname_list.remove(surname_entry)
+        except (IndexError, ValueError):
+            return CurrentSurname({}, SURNAME_IDX_ERROR)
+
+        write = self._db_handler.write_surnames(read.surname_list)
+
+        return CurrentSurname(surname_entry, write.response_code)
+
+    def get_surname(self, surname_identifier: str) -> CurrentSurname:
+        """Return a surname using its index or value."""
+
+        read = self._db_handler.read_surnames()
+
+        if read.response_code:
+            return CurrentSurname({}, read.response_code)
+
+        try:
+            surname_entry = self._get_entry_by_identifier(
+                read.surname_list, "surname", surname_identifier
+            )
+        except IndexError:
+            return CurrentSurname({}, SURNAME_IDX_ERROR)
+
+        return CurrentSurname(surname_entry, read.response_code)
 
     def remove_all(self) -> CurrentName:
         """Remove all first names and surnames from the database."""

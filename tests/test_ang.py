@@ -189,7 +189,58 @@ def test_remove_surname_cli_uses_surname_wording(configured_cli_database):
     result = runner.invoke(cli.app, ["remove-surname", "1", "--force"])
 
     assert result.exit_code == 0
-    assert "Surname # 1: 'Botha' was removed" in result.stdout
+    assert "Surname 'Botha' was removed" in result.stdout
+
+
+def test_remove_name_cli_accepts_name_value(configured_cli_database):
+    db_file = configured_cli_database(
+        {
+            "names": [{"name": "Pieter", "prevalence": 10}],
+            "surnames": [],
+        }
+    )
+
+    result = runner.invoke(cli.app, ["remove-name", "Pieter", "--force"])
+
+    assert result.exit_code == 0
+    assert "Name 'Pieter' was removed" in result.stdout
+    with db_file.open("r") as db:
+        database = json.load(db)
+    assert database["names"] == []
+
+
+def test_remove_surname_cli_accepts_surname_value(configured_cli_database):
+    db_file = configured_cli_database(
+        {
+            "names": [],
+            "surnames": [{"surname": "Botha", "prevalence": 8}],
+        }
+    )
+
+    result = runner.invoke(cli.app, ["remove-surname", "botha", "--force"])
+
+    assert result.exit_code == 0
+    assert "Surname 'Botha' was removed" in result.stdout
+    with db_file.open("r") as db:
+        database = json.load(db)
+    assert database["surnames"] == []
+
+
+def test_remove_name_cancel_does_not_delete(configured_cli_database):
+    db_file = configured_cli_database(
+        {
+            "names": [{"name": "Pieter", "prevalence": 10}],
+            "surnames": [],
+        }
+    )
+
+    result = runner.invoke(cli.app, ["remove-name", "Pieter"], input="n\n")
+
+    assert result.exit_code == 0
+    assert "Operation canceled" in result.stdout
+    with db_file.open("r") as db:
+        database = json.load(db)
+    assert database["names"] == [{"name": "Pieter", "prevalence": 10}]
 
 
 def test_clear_removes_names_and_surnames(

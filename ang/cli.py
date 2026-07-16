@@ -231,7 +231,7 @@ def set_prevalence(
 
 @app.command()
 def remove_name(
-    name_idx: int = typer.Argument(...),
+    name_identifier: str = typer.Argument(...),
     force: bool = typer.Option(
         False,
         "--force",
@@ -239,38 +239,33 @@ def remove_name(
         help="Force deletion without confirmation.",
     ),
 ) -> None:
-    """Remove a name using its index."""
+    """Remove a name using its index or value."""
     namer = get_namer()
 
     def _remove():
-        name_entry, response = namer.remove_name_by_idx(name_idx)
+        name_entry, response = namer.remove_name(name_identifier)
         if response:
 
             _exit_with_error(
-                f"Removing name # {name_idx} failed with", response
+                f"Removing name {name_identifier} failed with", response
             )
 
         else:
             typer.secho(
-                f"""Name # {name_idx}: '{name_entry["name"]}' was removed""",
+                f"""Name '{name_entry["name"]}' was removed""",
                 fg=typer.colors.GREEN,
             )
 
     if force:
         _remove()
     else:
-        name_list = namer.get_name_list()
-        try:
-            if name_idx < 1:
-                raise IndexError
-            name_entry = name_list[name_idx - 1]
-        except IndexError:
-            typer.secho("Invalid name index", fg=typer.colors.RED)
-            raise typer.Exit(1)
+        name_entry, response = namer.get_name(name_identifier)
+        if response:
+            _exit_with_error(
+                f"Removing name {name_identifier} failed with", response
+            )
 
-        delete = typer.confirm(
-            f"Delete name # {name_idx}: {name_entry['name']}?"
-        )
+        delete = typer.confirm(f"Delete name: {name_entry['name']}?")
         if delete:
             _remove()
         else:
@@ -279,7 +274,7 @@ def remove_name(
 
 @app.command()
 def remove_surname(
-    surname_idx: int = typer.Argument(...),
+    surname_identifier: str = typer.Argument(...),
     force: bool = typer.Option(
         False,
         "--force",
@@ -287,38 +282,33 @@ def remove_surname(
         help="Force deletion without confirmation.",
     ),
 ) -> None:
-    """Remove a surname using its index."""
+    """Remove a surname using its index or value."""
     namer = get_namer()
 
     def _remove():
-        surname_entry, response = namer.remove_surname_by_idx(surname_idx)
+        surname_entry, response = namer.remove_surname(surname_identifier)
         if response:
 
             _exit_with_error(
-                f"Removing surname # {surname_idx} failed with", response
+                f"Removing surname {surname_identifier} failed with", response
             )
 
         else:
             typer.secho(
-                f"""Surname # {surname_idx}: '{surname_entry["surname"]}' was removed""",
+                f"""Surname '{surname_entry["surname"]}' was removed""",
                 fg=typer.colors.GREEN,
             )
 
     if force:
         _remove()
     else:
-        surname_list = namer.get_surname_list()
-        try:
-            if surname_idx < 1:
-                raise IndexError
-            surname_entry = surname_list[surname_idx - 1]
-        except IndexError:
-            typer.secho("Invalid surname index", fg=typer.colors.RED)
-            raise typer.Exit(1)
+        surname_entry, response = namer.get_surname(surname_identifier)
+        if response:
+            _exit_with_error(
+                f"Removing surname {surname_identifier} failed with", response
+            )
 
-        delete = typer.confirm(
-            f"Delete surname # {surname_idx}: {surname_entry['surname']}?"
-        )
+        delete = typer.confirm(f"Delete surname: {surname_entry['surname']}?")
         if delete:
             _remove()
         else:
