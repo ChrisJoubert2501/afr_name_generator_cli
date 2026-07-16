@@ -29,6 +29,17 @@ def test_cli_error_message_handles_json_errors():
     assert cli._get_error_message(JSON_ERROR) == "database JSON error"
 
 
+def test_cli_handles_invalid_config_file(tmp_path, monkeypatch):
+    config_file = tmp_path / "config.ini"
+    config_file.write_text("[General]\n")
+    monkeypatch.setattr(cli.config, "CONFIG_FILE_PATH", config_file)
+
+    result = runner.invoke(cli.app, ["list-names"])
+
+    assert result.exit_code == 1
+    assert 'Config file is invalid. Please, run "ang init"' in result.stdout
+
+
 @pytest.fixture
 def database_file(tmp_path):
     def _database_file(database):

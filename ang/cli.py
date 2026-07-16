@@ -54,7 +54,14 @@ def init(
 def get_namer() -> ang.Namer:
 
     if config.CONFIG_FILE_PATH.exists():
-        db_path = config.get_database_path(config.CONFIG_FILE_PATH)
+        try:
+            db_path = config.get_database_path(config.CONFIG_FILE_PATH)
+        except KeyError:
+            typer.secho(
+                'Config file is invalid. Please, run "ang init"',
+                fg=typer.colors.RED,
+            )
+            raise typer.Exit(1)
     else:
         typer.secho(
             'Config file not found. Please, run "ang init"',
